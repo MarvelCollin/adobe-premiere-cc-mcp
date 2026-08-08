@@ -32,6 +32,7 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   list_export_presets: { filter: "H.264", limit: 5 },
   export_sequence: { output_path: "C:/tmp/out.mp4", preset_path: "C:/tmp/preset.epr" },
   analyse_loudness: { target: "social", range: "entire" },
+  get_timeline: { detail: "full", track_type: "both", empty_tracks: true },
   run_script: { code: "return __result({ ok: 1 });" },
   set_playhead: { time_seconds: 6 },
   set_track_state: { track_type: "audio", track_index: 0, muted: true },

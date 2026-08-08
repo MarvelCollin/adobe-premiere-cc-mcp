@@ -79,7 +79,7 @@ Then ask the assistant to call `ping`.
 | Tool | Parameters | What it does |
 | --- | --- | --- |
 | `ping` | — | Check that Premiere is running and the bridge panel is alive. |
-| `get_timeline` | — | Full picture of the active sequence: resolution, frame rate, duration, and every clip on every track with its node ID, timing, effects and Motion scale. |
+| `get_timeline` | `detail`, `track_type`, `track_index`, `empty_tracks` | Picture of the active sequence: resolution, frame rate, duration, and every clip on every track with its node ID, timing and Motion scale. |
 | `get_clip` | `node_id` | Everything about one clip: timing, in-point, and every effect with all of its property values and keyframe state. |
 | `list_sequences` | — | List every sequence in the project and say which one is active. |
 | `set_active_sequence` | `sequence` | Make a sequence the active one, so every other tool operates on it. |
