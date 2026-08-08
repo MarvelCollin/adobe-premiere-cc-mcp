@@ -194,6 +194,18 @@ Premiere and looking at the timeline found it.
       refuses out of range times outright, and any frame that measures as fully black is
       flagged with `blankFrame` and has its suggestions suppressed, since a gap or a
       disabled clip can produce one inside the sequence too.
+- [x] **`move_clip` destroyed whatever was in the way while promising it would not.**
+      Its description said the move fails if another clip occupies the destination; in
+      fact Premiere's QE move overwrites, and the tool only checked that the clip landed,
+      never that the space was free. Moving a clip onto a neighbour silently deleted the
+      neighbour. It now scans the lane for anything overlapping the destination span and
+      refuses, naming what is in the way, unless `overwrite` is passed. Found by testing
+      the tool's own documented guarantee rather than its happy path.
+- [x] **`remove_clip` reported `rippled: true` by echoing the argument**, not by
+      checking. QE's remove often does not ripple, so a gap was left behind while the
+      response claimed otherwise. It now records where the following clip sat, compares
+      afterwards, and returns `gapClosed` with a warning when a requested ripple did not
+      happen.
 - [x] Node version was claimed three different ways: `20.19+` in the README, `>=18` in
       `engines`, and only 20 tested in CI. Node 18 is end of life, so it is `>=20` now,
       stated once and tested on 20 and 22.

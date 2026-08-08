@@ -90,7 +90,7 @@ export const editTools = defineTools([
   {
     name: "remove_clip",
     description:
-      "Remove a clip from the timeline. Ripple closes the gap and shifts everything after it; lift leaves a gap. Destructive, so confirm the node ID with get_timeline first.",
+      "Remove a clip from the timeline. Asking for a ripple tries to close the gap and shift everything after it; lift leaves the gap. The response reports whether the gap actually closed rather than assuming it did, because Premiere's QE remove does not always ripple. Destructive, so confirm the node ID with get_timeline first.",
     schema: {
       node_id: NODE_ID,
       ripple: z.boolean().default(false).describe("True closes the gap, false leaves it"),
@@ -112,18 +112,49 @@ export const editTools = defineTools([
 
         var seq = __seq();
         var domTracks = found.trackType === "video" ? seq.videoTracks : seq.audioTracks;
-        var before = domTracks[found.trackIndex].clips.numItems;
+        var lane = domTracks[found.trackIndex];
+        var before = lane.clips.numItems;
+
+        var followerStart = null;
+        for (var f = 0; f < lane.clips.numItems; f++) {
+          var candidate = lane.clips[f];
+          if (candidate.start.seconds > startSeconds + 0.001) {
+            if (followerStart === null || candidate.start.seconds < followerStart) {
+              followerStart = candidate.start.seconds;
+            }
+          }
+        }
 
         qeClip.remove(${ripple ? "true" : "false"}, false);
 
-        var after = domTracks[found.trackIndex].clips.numItems;
+        var after = lane.clips.numItems;
         if (after >= before) return __error("Remove ran but the clip count did not drop for " + name);
+
+        var followerStartNow = null;
+        for (var g = 0; g < lane.clips.numItems; g++) {
+          var later = lane.clips[g];
+          if (later.start.seconds >= startSeconds - 0.001) {
+            if (followerStartNow === null || later.start.seconds < followerStartNow) {
+              followerStartNow = later.start.seconds;
+            }
+          }
+        }
+
+        var gapClosed = followerStart === null
+          ? true
+          : (followerStartNow !== null && followerStartNow < followerStart - 0.001);
+
         return __result({
           removed: name,
           atSeconds: startSeconds,
-          rippled: ${ripple},
+          rippleRequested: ${ripple},
+          gapClosed: gapClosed,
           clipsBefore: before,
-          clipsAfter: after
+          clipsAfter: after,
+          warning: (${ripple} && !gapClosed)
+            ? "Ripple was asked for but the following clip did not move, so a gap is left at " +
+              startSeconds + "s. Premiere's QE remove does not always ripple; close it with move_clip or a track level edit."
+            : null
         });
       `),
   },
