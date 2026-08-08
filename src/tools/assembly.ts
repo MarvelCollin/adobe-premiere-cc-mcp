@@ -134,7 +134,7 @@ export const assemblyTools = defineTools([
   {
     name: "set_clip_speed",
     description:
-      "Change a clip's playback speed. 100 is normal, 50 is half speed and twice as long, 200 is double speed. Confirms the new duration.",
+      "Change a clip's playback speed. 100 is normal, 50 is half speed, 200 is double speed. The clip keeps its slot on the timeline rather than growing or shrinking, so it covers less or more source footage instead; the response reports the speed read back off the clip, which is what confirms the change landed.",
     schema: {
       node_id: z.string().describe("Node ID of the timeline clip"),
       speed_percent: z.number().positive().describe("100 = normal speed"),
@@ -163,10 +163,23 @@ export const assemblyTools = defineTools([
         if (afterDuration === null) {
           return __error("The clip disappeared after the speed change");
         }
+
+        var appliedSpeed = null;
+        var verifyClip = __qeClipAt(__qeTrackFor(after), after.clip.start.seconds);
+        if (verifyClip) {
+          try { appliedSpeed = verifyClip.speed; } catch (e) { appliedSpeed = null; }
+        }
+        if (appliedSpeed !== null && Math.abs(appliedSpeed - rate) > 0.01) {
+          return __error(
+            "Premiere reported speed " + appliedSpeed + " after asking for " + rate
+          );
+        }
+
         return __result({
           nodeId: String(clip.nodeId),
           name: String(clip.name),
           speedPercent: ${speed_percent},
+          appliedSpeedPercent: appliedSpeed === null ? null : appliedSpeed * 100,
           durationBefore: beforeDuration,
           durationAfter: afterDuration
         });
