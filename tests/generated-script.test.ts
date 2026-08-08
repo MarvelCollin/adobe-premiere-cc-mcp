@@ -32,6 +32,7 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   list_export_presets: { filter: "H.264", limit: 5 },
   export_sequence: { output_path: "C:/tmp/out.mp4", preset_path: "C:/tmp/preset.epr" },
   analyse_loudness: { target: "social", range: "entire" },
+  normalise_loudness: { target: "social", track_index: 0, range: "entire" },
   get_timeline: { detail: "full", track_type: "both", empty_tracks: true },
   check_media: { limit: 200 },
   attach_proxy: { item_id: "000f4242", proxy_path: "C:/tmp/proxy.mp4" },

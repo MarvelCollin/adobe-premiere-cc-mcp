@@ -91,10 +91,15 @@ signed with our own certificate.
       Checked against EBU Tech 3341 sine cases: all within 0.02 LU of the expected
       value, against a tolerance of 0.1. Digital silence correctly measures as nothing
       rather than as a number.
-- [ ] Normalise to a target, as opposed to only measuring. `analyse_loudness` already
-      returns the exact gain needed; applying it means walking the clips on a track and
-      offsetting each level, which is easy, but the peak ceiling has to be respected or
-      a quiet mix gets pushed into clipping.
+- [x] `normalise_loudness` — measure, apply the gain, then re-measure and report whether
+      the target was actually reached. It moves every audio track by default. The first
+      cut took a `track_index` and defaulted to A1, which is wrong: loudness is a
+      property of the whole mix, so moving one track undershoots silently whenever
+      anything else makes noise. Caught by normalising a grid whose camera audio sat on
+      eight other tracks; a 9 dB clip move shifted the sequence by 2.9 dB. It now also
+      respects a -1 dBFS true peak ceiling, applying only the gain that fits and saying
+      how much was left. Verified: needed 10.43 dB, applied 10.25, landed at -14.26 LUFS
+      with the peak exactly on the ceiling.
 
 
 ## Phase 5 — make it a real package

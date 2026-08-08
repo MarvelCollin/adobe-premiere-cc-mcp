@@ -81,7 +81,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-50 tools.
+51 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -122,6 +122,7 @@ Then ask the assistant to call `ping`.
 | `grade_clips` | `node_ids`, `add_lumetri_if_missing`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Apply the same Lumetri Basic Correction to a group of clips in one pass, then read every value back. |
 | `set_lumetri` | `node_id`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Set Lumetri Basic Correction values on a clip and read them back. |
 | `set_audio_level` | `node_id`, `db` | Set a clip's audio level in decibels and read it back. |
+| `normalise_loudness` | `target`, `track_index`, `range`, `allow_clipping`, `timeout_ms` | Measure the sequence loudness and then actually move the audio to hit the target, in one pass. |
 | `analyse_loudness` | `target`, `range`, `timeout_ms` | Measure how loud the sequence actually is, in LUFS to ITU-R BS.1770, by rendering its audio to a temporary WAV and analysing it here. |
 | `set_fade` | `node_id`, `fade_in_seconds`, `fade_out_seconds` | Put a clean fade in and/or out on a clip: Opacity for video, Volume for audio. |
 | `list_effects` | `kind`, `filter` | List every video or audio effect name Premiere can apply. |

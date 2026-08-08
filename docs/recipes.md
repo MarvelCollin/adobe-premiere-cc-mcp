@@ -65,8 +65,21 @@ analyse_loudness(target="social", range="in_to_out")
 
 Targets are `social` -14, `streaming` and `podcast` -16, `broadcast` -23 LUFS. The
 response gives the exact dB to move and warns when the peak ceiling means you cannot get
-there without clipping. Apply the move with `set_audio_level` per clip; track mixer
-levels are not scriptable.
+there without clipping.
+
+To actually apply it:
+
+```
+normalise_loudness(target="social", range="in_to_out")
+```
+
+It moves every audio track, re-measures, and tells you whether it landed. Do not pass
+`track_index` unless you really mean one track: loudness belongs to the whole mix, so
+moving a single track undershoots whenever anything else is making noise.
+
+It will not push the mix into clipping. If the gain needed would take the estimated true
+peak above -1 dBFS it applies only what fits and reports the shortfall, unless you pass
+`allow_clipping`.
 
 ## Export only part of a sequence
 
@@ -116,6 +129,11 @@ Note `__findClip` returns a wrapper, so it is `found.clip`, not the clip itself.
 Finish with `set_fade` on each cell, music on A1 via `add_to_timeline` with
 `track_type: "audio"`, and `check_edit` to confirm the whole thing is clean before
 exporting.
+
+One trap worth knowing: adding a clip to a **video** track also drops its **camera audio**
+onto an audio track. Nine cells therefore give you nine audio tracks playing at once
+under your music. Mute or remove them with `set_track_state` before you export, and check
+`get_timeline(track_type="audio")` rather than assuming.
 
 ## When a tool seems to do nothing
 
