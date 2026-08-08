@@ -4,7 +4,6 @@ import { BRIDGE_DIR } from "./bridge/client.js";
 import { createServer, SERVER_NAME, SERVER_VERSION } from "./server.js";
 
 async function main(): Promise<void> {
-  // stdout is the MCP channel, so anything human readable goes to stderr.
   process.stderr.write(`${SERVER_NAME} ${SERVER_VERSION} ready (bridge: ${BRIDGE_DIR})\n`);
   await createServer().connect(new StdioServerTransport());
 }

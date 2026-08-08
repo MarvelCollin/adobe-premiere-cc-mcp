@@ -4,7 +4,6 @@ import { allTools, type ToolDefinition } from "./tools/index.js";
 export const SERVER_NAME = "adobe-premiere-cc-mcp";
 export const SERVER_VERSION = "0.1.0";
 
-/** Renders a handler's payload as the MCP text result, or its failure as an error result. */
 async function runTool(tool: ToolDefinition, args: unknown) {
   try {
     const data = await tool.handler(args ?? {});

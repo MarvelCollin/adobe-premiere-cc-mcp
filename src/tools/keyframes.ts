@@ -37,17 +37,12 @@ export const keyframeTools = defineTools([
         var prop = isAudio ? __property(comp, "Level") : __property(comp, "Opacity");
         if (!prop) return __error("Could not find the property to fade");
 
-        // Fade back up to whatever the clip currently sits at, not a fixed value,
-        // so an audio bed keeps its mixed level.
         var full = isAudio ? prop.getValue() : 100;
         if (isAudio && !(full > 0)) full = 1;
 
         var clearedKeys = __clearKeys(prop);
         prop.setValue(full, true);
 
-        // Keyframe times are absolute SOURCE time, not clip-relative. Stills and
-        // graphics sit near 3600s, so anchoring at zero writes keys outside the
-        // clip and nothing happens.
         var base = clip.inPoint.seconds;
         var duration = clip.end.seconds - clip.start.seconds;
         prop.setTimeVarying(true);

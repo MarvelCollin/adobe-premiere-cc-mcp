@@ -67,13 +67,15 @@ export const editTools = defineTools([
         if (typeof qeTrack.razor !== "function") {
           return __error("This Premiere build does not expose razor on the QE track");
         }
-        // razor takes a timecode string, not seconds or ticks.
         seq.setPlayerPosition(String(__secondsToTicks(${time_seconds})));
         qeTrack.razor(String(qeSeq.CTI.timecode));
 
         var after = domTracks[${track_index}].clips.numItems;
         if (after <= before) {
-          return __error("Razor ran at ${time_seconds}s but the clip count did not change; is there a clip there?");
+          return __error(
+            "Razor ran at ${time_seconds}s but the clip count did not change. Either no clip covers that " +
+            "time on ${track_type} track ${track_index}, or there is already an edit point there."
+          );
         }
         return __result({
           trackType: "${track_type}",

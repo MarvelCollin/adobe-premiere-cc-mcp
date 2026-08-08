@@ -1,13 +1,4 @@
 #!/usr/bin/env node
-/**
- * Drives the built server over stdio exactly like an MCP client would, so tools
- * can be exercised against a live Premiere without restarting the assistant.
- *
- *   npm run smoke                     # connection + read-only sweep
- *   npm run smoke -- ping             # one tool, no arguments
- *   npm run smoke -- get_clip '{"node_id":"000f4241"}'
- *   npm run smoke -- --list           # show tool names and exit
- */
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -16,7 +7,6 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const SERVER = join(HERE, "..", "dist", "index.js");
 const CALL_TIMEOUT_MS = 180_000;
 
-/** Read-only calls that are safe to run against any open project. */
 const DEFAULT_SWEEP = [
   ["ping", {}],
   ["get_timeline", {}],
@@ -45,7 +35,6 @@ child.stdout.on("data", (chunk) => {
         resolve(message);
       }
     } catch {
-      /* the server only writes framed JSON, so anything else is noise */
     }
   }
 });

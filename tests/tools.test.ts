@@ -28,7 +28,6 @@ describe("tool registry", () => {
     for (const tool of allTools) {
       for (const [field, schema] of Object.entries(tool.schema)) {
         const described = (schema as { description?: string }).description !== undefined;
-        // Enums and defaults are self documenting; everything else needs prose.
         if (!described) {
           expect(
             (schema as { _def?: { typeName?: string } })._def?.typeName,

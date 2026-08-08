@@ -87,7 +87,6 @@ export const timelineTools = defineTools([
             var prop = comp.properties[p];
             var value = null;
             try { value = prop.getValue(); } catch (e) { value = "<unreadable>"; }
-            // Lumetri stores a large opaque blob that is useless in a response.
             if (typeof value === "string" && value.length > 80) value = "<blob>";
             var keyframed = false;
             try { keyframed = prop.isTimeVarying(); } catch (e2) { keyframed = false; }

@@ -4,12 +4,6 @@ import { esc } from "../bridge/script.js";
 import { WARP_PROPERTY, WARP_RESULT, type WarpMode } from "../premiere/constants.js";
 import { defineTools } from "./types.js";
 
-/**
- * Warp Stabilizer never re-analyses in response to a scripted parameter change,
- * so a clip can look configured while being completely unstabilised. The only
- * reliable tell is the auto-scale property's DISPLAY NAME: once solved it reads
- * "Auto-scale (103,1%)", and while unsolved it stays a bare "Auto-scale".
- */
 const SOLVED_CHECK = `String(warp.properties[${WARP_PROPERTY.autoScale}].displayName)`;
 
 export const stabilizerTools = defineTools([

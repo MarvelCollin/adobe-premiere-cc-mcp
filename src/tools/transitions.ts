@@ -11,7 +11,6 @@ export const transitionTools = defineTools([
     handler: async ({ filter = "" }: { filter?: string }) =>
       evaluate(`
         __qe();
-        // Like the effect list, this is an array of plain name strings.
         var list = qe.project.getVideoTransitionList();
         var needle = "${esc(filter)}".toLowerCase();
         var names = [];
@@ -61,15 +60,39 @@ export const transitionTools = defineTools([
           return __error("No such transition: ${esc(transition_name)}. Use list_transitions for exact names.");
         }
 
-        // On Premiere 26.x addTransition lives on the QE CLIP, not the QE track.
         if (typeof qeClip.addTransition !== "function") {
           return __error("This Premiere build does not expose addTransition on the QE clip");
         }
 
-        var domTrack = __seq().videoTracks[found.trackIndex];
-        var before = domTrack.transitions.numItems;
+        function transitionCount() {
+          return __seq().videoTracks[found.trackIndex].transitions.numItems;
+        }
+
+        var edgeSeconds = ${at === "start" ? "clip.start.seconds" : "clip.end.seconds"};
+        var existingTrack = __seq().videoTracks[found.trackIndex];
+        for (var e = 0; e < existingTrack.transitions.numItems; e++) {
+          var existing = existingTrack.transitions[e];
+          if (existing.start.seconds - 0.001 <= edgeSeconds && existing.end.seconds + 0.001 >= edgeSeconds) {
+            return __result({
+              nodeId: String(clip.nodeId),
+              name: String(clip.name),
+              transition: String(existing.name),
+              at: "${at}",
+              alreadyPresent: true,
+              transitionsBefore: existingTrack.transitions.numItems,
+              transitionsAfter: existingTrack.transitions.numItems
+            });
+          }
+        }
+
+        var before = transitionCount();
         qeClip.addTransition(transition, ${at === "start" ? "true" : "false"});
-        var after = domTrack.transitions.numItems;
+
+        var after = transitionCount();
+        if (after <= before) {
+          try { $.sleep(300); } catch (sleepError) { }
+          after = transitionCount();
+        }
 
         if (after <= before) {
           return __error(

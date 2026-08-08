@@ -15,8 +15,6 @@ export const effectTools = defineTools([
     handler: async ({ kind = "video", filter = "" }: { kind?: "video" | "audio"; filter?: string }) =>
       evaluate(`
         __qe();
-        // These return plain arrays of NAME STRINGS. Entries have no .name and the
-        // array has no .numItems, which is what makes naive lookups find nothing.
         var list = ${kind === "audio" ? "qe.project.getAudioEffectList()" : "qe.project.getVideoEffectList()"};
         var needle = "${esc(filter)}".toLowerCase();
         var names = [];
@@ -49,8 +47,6 @@ export const effectTools = defineTools([
         var qeClip = __qeClipAt(qeTrack, clip.start.seconds);
         if (!qeClip) return __error("Could not resolve the QE clip for " + clip.name);
 
-        // Effect objects must come from getVideoEffectByName; the list entries are
-        // bare strings and cannot be passed to addVideoEffect.
         var fx = null;
         try {
           fx = isVideo

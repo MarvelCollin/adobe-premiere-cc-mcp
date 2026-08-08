@@ -1,12 +1,3 @@
-/**
- * ExtendScript generation.
- *
- * Premiere's scripting host is ES3: `var` only, no arrow functions, no template
- * literals, no `JSON`. Everything generated here has to obey that, including the
- * helpers below.
- */
-
-/** Escapes a runtime value for safe embedding in generated ExtendScript source. */
 export function esc(value: string): string {
   return String(value)
     .replace(/\\/g, "\\\\")
@@ -15,10 +6,6 @@ export function esc(value: string): string {
     .replace(/\n/g, "\\n");
 }
 
-/**
- * Prepended to every script. These encode the Premiere behaviours that are easy
- * to get wrong, so individual tools stay short and consistent.
- */
 const HELPERS = String.raw`
 var TICKS_PER_SECOND = 254016000000;
 
@@ -28,7 +15,6 @@ function __secondsToTicks(seconds) { return Math.round(Number(seconds) * TICKS_P
 function __seq() { return app.project.activeSequence; }
 function __qe() { app.enableQE(); return qe.project.getActiveSequence(); }
 
-/** Finds a timeline clip by node id across every video and audio track. */
 function __findClip(nodeId) {
   var seq = __seq();
   if (!seq) return null;
@@ -50,10 +36,6 @@ function __findClip(nodeId) {
   return null;
 }
 
-/**
- * QE track items include empty gaps, so a QE index never matches the DOM clip
- * index. Match on start time instead.
- */
 function __qeClipAt(qeTrack, startSeconds) {
   for (var i = 0; i < qeTrack.numItems; i++) {
     var item = qeTrack.getItemAt(i);
@@ -90,11 +72,6 @@ function __componentNames(clip) {
   return names;
 }
 
-/**
- * getKeys() returns undefined rather than an empty array when a property has no
- * keyframes, and new keys interleave with existing ones instead of replacing
- * them. Always clear before writing a fresh envelope.
- */
 function __clearKeys(prop) {
   var varying = false;
   try { varying = prop.isTimeVarying(); } catch (e) { varying = false; }
@@ -126,7 +103,6 @@ function __escapeJson(s) {
   return out;
 }
 
-/** ES3 has no JSON object, so responses are serialised by hand. */
 function __json(value) {
   if (value === null || value === undefined) return "null";
   var t = typeof value;
@@ -150,7 +126,6 @@ function __result(data) { return '{"ok":true,"data":' + __json(data) + "}"; }
 function __error(message) { return '{"ok":false,"error":"' + __escapeJson(message) + '"}'; }
 `;
 
-/** Wraps a tool body with the helpers and a top level try/catch. */
 export function wrapScript(body: string): string {
   return `(function () {
 ${HELPERS}

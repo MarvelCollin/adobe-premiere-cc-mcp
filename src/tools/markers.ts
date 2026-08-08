@@ -3,10 +3,6 @@ import { evaluate } from "../bridge/client.js";
 import { esc } from "../bridge/script.js";
 import { defineTools } from "./types.js";
 
-/**
- * Sequence markers are a linked list rather than an indexable collection, so
- * every read walks it with getFirstMarker/getNextMarker.
- */
 const WALK_MARKERS = String.raw`
 function walkMarkers(seq) {
   var out = [];

@@ -5,19 +5,10 @@ import { join } from "node:path";
 import { BridgeError, HostError } from "./errors.js";
 import { wrapScript } from "./script.js";
 
-/**
- * Talks to the CEP panel running inside Premiere through a shared temp folder.
- *
- * We drop `cmd_<id>.jsx`; the panel claims it with an atomic rename, runs it via
- * evalScript, and writes `res_<id>.json` back. For anything slower than two
- * seconds the panel also touches `busy_<id>.json`, which lets us tell "still
- * working" apart from "the panel is not running".
- */
 export const BRIDGE_DIR = join(tmpdir(), "premiere-mcp-bridge");
 
 const POLL_INTERVAL_MS = 50;
 const DEFAULT_TIMEOUT_MS = 30_000;
-/** How long an unclaimed command may sit before we call the panel dead. */
 const CLAIM_TIMEOUT_MS = 5_000;
 
 export interface ScriptEnvelope<T = unknown> {
@@ -57,12 +48,11 @@ function remove(...paths: string[]): void {
     try {
       if (existsSync(path)) unlinkSync(path);
     } catch {
-      /* the panel may still hold a handle; a stale temp file is harmless */
+      continue;
     }
   }
 }
 
-/** Sends one already-wrapped script to Premiere and returns its raw envelope. */
 export async function sendScript<T = unknown>(
   script: string,
   options: BridgeOptions = {},
@@ -96,7 +86,6 @@ export async function sendScript<T = unknown>(
         );
       }
 
-      // Still unclaimed after the grace period means nothing is polling the folder.
       const unclaimed = existsSync(commandPath);
       const heartbeat = modifiedAt(busyPath);
       if (unclaimed && heartbeat === null && elapsed > CLAIM_TIMEOUT_MS) {
@@ -113,10 +102,6 @@ export async function sendScript<T = unknown>(
   }
 }
 
-/**
- * Runs a tool body in Premiere and returns its payload, converting the failure
- * envelope into an exception so tool handlers stay linear.
- */
 export async function evaluate<T = unknown>(body: string, options: BridgeOptions = {}): Promise<T> {
   const envelope = await sendScript<T>(wrapScript(body), options);
   if (!envelope.ok) throw new HostError(envelope.error ?? "Unknown ExtendScript failure");

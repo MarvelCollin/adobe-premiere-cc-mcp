@@ -16,7 +16,6 @@ import { transformTools } from "./transform.js";
 import { transitionTools } from "./transitions.js";
 import type { ToolDefinition } from "./types.js";
 
-/** Every tool the server exposes, grouped by the concern it covers. */
 export const allTools: ToolDefinition[] = [
   ...connectionTools,
   ...timelineTools,

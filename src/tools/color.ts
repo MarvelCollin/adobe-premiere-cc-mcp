@@ -4,7 +4,6 @@ import { esc } from "../bridge/script.js";
 import { LUMETRI_PROPERTY, type LumetriField } from "../premiere/constants.js";
 import { defineTools } from "./types.js";
 
-/** Tool argument name -> Lumetri property index. */
 const FIELD_ARGUMENTS: Record<string, LumetriField> = {
   exposure: "exposure",
   contrast: "contrast",

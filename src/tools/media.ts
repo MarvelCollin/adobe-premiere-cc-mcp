@@ -4,7 +4,6 @@ import { esc } from "../bridge/script.js";
 import { toHostPath } from "../premiere/paths.js";
 import { defineTools } from "./types.js";
 
-/** Walks the project panel tree, which nests bins arbitrarily deep. */
 const WALK_ITEMS = String.raw`
 function walkItems(item, path, depth, out, limit) {
   if (out.length >= limit) return;

@@ -22,8 +22,6 @@ export const exportTools = defineTools([
         seq.setPlayerPosition(String(__secondsToTicks(${time_seconds})));
         var qeSeq = __qe();
 
-        // The real signature is (timecode, pathWithoutExtension) and Premiere
-        // appends ".png" itself, so passing "shot.png" yields "shot.png.png".
         var requested = "${esc(toHostPath(output_path))}";
         var base = requested.replace(/\\.png$/i, "");
         var reported = qeSeq.exportFramePNG(String(qeSeq.CTI.timecode), base);
@@ -60,8 +58,6 @@ export const exportTools = defineTools([
       evaluate(
         `
         var roots = [];
-        // Folder.startup is where Premiere is actually running from, which also
-        // covers installs outside the default location.
         var startup = Folder.startup.fsName;
         ${PRESET_SUBFOLDERS.map(
           (sub) => `(function () { var f = new Folder(startup + "/${sub}"); if (f.exists) roots.push(f); })();`,
@@ -126,7 +122,6 @@ export const exportTools = defineTools([
           app.encoder.ENCODE_ENTIRE
         );
 
-        // exportAsMediaDirect returns "No Error" even when nothing is written.
         var written = new File("${esc(toHostPath(output_path))}");
         if (!written.exists) {
           return __error("Export reported '" + reported + "' but no file was written to ${esc(toHostPath(output_path))}");
