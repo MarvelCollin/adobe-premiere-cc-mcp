@@ -318,6 +318,7 @@ export const reviewTools = defineTools([
               blacks: lumetri.properties[${LUMETRI_PROPERTY.blacks}].getValue(),
               saturation: lumetri.properties[${LUMETRI_PROPERTY.saturation}].getValue(),
               temperature: lumetri.properties[${LUMETRI_PROPERTY.temperature}].getValue(),
+              tint: lumetri.properties[${LUMETRI_PROPERTY.tint}].getValue(),
               lookIntensity: lumetri.properties[${LUMETRI_PROPERTY.lookIntensity}].getValue()
             });
           }
