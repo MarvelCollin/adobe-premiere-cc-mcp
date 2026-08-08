@@ -59,13 +59,16 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-34 tools.
+37 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
 | `ping` | — | Check that Premiere is running and the bridge panel is alive. |
 | `get_timeline` | — | Full picture of the active sequence: resolution, frame rate, duration, and every clip on every track with its node ID, timing, effects and Motion scale. |
 | `get_clip` | `node_id` | Everything about one clip: timing, in-point, and every effect with all of its property values and keyframe state. |
+| `list_sequences` | — | List every sequence in the project and say which one is active. |
+| `set_active_sequence` | `sequence` | Make a sequence the active one, so every other tool operates on it. |
+| `create_sequence_from_items` | `name`, `item_ids` | Create a new sequence built from one or more project items, and confirm it exists. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
 | `set_playhead` | `time_seconds` | Move the playhead to a time in seconds and read the position back. |
 | `set_track_state` | `track_type`, `track_index`, `muted` | Mute or unmute a video or audio track and read the state back. |

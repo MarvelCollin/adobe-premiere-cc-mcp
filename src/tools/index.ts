@@ -10,6 +10,7 @@ import { markerTools } from "./markers.js";
 import { mediaTools } from "./media.js";
 import { playheadTools } from "./playhead.js";
 import { projectTools } from "./project.js";
+import { sequenceTools } from "./sequence.js";
 import { stabilizerTools } from "./stabilizer.js";
 import { timelineTools } from "./timeline.js";
 import { trackTools } from "./tracks.js";
@@ -20,6 +21,7 @@ import type { ToolDefinition } from "./types.js";
 export const allTools: ToolDefinition[] = [
   ...connectionTools,
   ...timelineTools,
+  ...sequenceTools,
   ...playheadTools,
   ...trackTools,
   ...markerTools,

@@ -81,8 +81,12 @@ export async function sendScript<T = unknown>(
 
       const elapsed = Date.now() - startedAt;
       if (elapsed > timeoutMs) {
+        const stalled = modifiedAt(busyPath) !== null;
         throw new BridgeError(
-          `Script timed out after ${timeoutMs}ms. Raise timeout_ms for long operations such as exports.`,
+          `Script timed out after ${timeoutMs}ms. ` +
+            (stalled
+              ? "Premiere is still working on it, so either raise timeout_ms or check for a modal dialog waiting for input."
+              : "Raise timeout_ms for long operations such as exports, and check Premiere for a modal dialog, which blocks the bridge until dismissed."),
         );
       }
 

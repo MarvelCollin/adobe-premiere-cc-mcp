@@ -107,6 +107,7 @@ await check("get_clip", "get_clip", { node_id: firstVideo });
 await check("get_playhead", "get_playhead", {});
 await check("set_playhead", "set_playhead", { time_seconds: midpoint });
 await check("list_project_items", "list_project_items", { limit: 20 });
+await check("list_sequences", "list_sequences", {});
 await check("list_effects", "list_effects", { kind: "video", filter: "lumetri" });
 await check("list_transitions", "list_transitions", { filter: "dissolve" });
 await check("list_export_presets", "list_export_presets", { filter: "Match Source", limit: 5 });
@@ -177,6 +178,17 @@ if (split.ok) {
   const after = JSON.parse((await call("get_timeline")).text);
   const victim = after.videoTracks[0].clips.find((clip) => Math.abs(clip.start - splitAt) < 0.05);
   if (victim) await check("remove_clip", "remove_clip", { node_id: victim.nodeId, ripple: false });
+}
+
+if (media) {
+  const scratchName = `Scratch_${Date.now()}`;
+  const made = await check("create_sequence_from_items", "create_sequence_from_items", {
+    name: scratchName,
+    item_ids: [media.nodeId],
+  });
+  if (made.ok) {
+    await check("set_active_sequence", "set_active_sequence", { sequence: sequence.name });
+  }
 }
 
 await check("save_project", "save_project", {});
