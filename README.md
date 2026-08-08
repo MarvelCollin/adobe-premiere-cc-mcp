@@ -33,6 +33,11 @@ destructive ones.
   whether the message survives muted playback.
 - **Nothing borrowed.** The CEP panel that carries commands into Premiere was written
   from the protocol for this project and is signed with its own certificate.
+- **Small on purpose.** Other Premiere MCP servers ship several hundred to over a
+  thousand tools. Every tool's name, description and schema is sent to the model on
+  every request, so a large surface is paid for on each turn before any work happens.
+  These 53 tools cost roughly 4,200 tokens of that budget. The aim is one obvious tool
+  per job, each proven against Premiere, rather than one per scripting call.
 
 ## Documentation
 
