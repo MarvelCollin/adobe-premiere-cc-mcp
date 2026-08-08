@@ -54,8 +54,18 @@ signed with our own certificate.
       capability. Revisit only if a workflow actually needs the UI selection.
 - [x] Sequence in and out points, for partial exports. Work area is readable;
       Premiere exposes no setter worth trusting, so in/out is the supported route.
-- [ ] Proxy attach and detach, offline media handling.
-- [ ] Audio track mixer levels, as opposed to per clip levels.
+- [ ] Proxy attach and detach, offline media handling. Not blocked: probing a project
+      item on 26.2 shows `canProxy`, `hasProxy`, `attachProxy`, `getProxyPath`,
+      `getMediaPath`, `changeMediaPath`, `isOffline` and `setOffline` all present and
+      working, and `canProxy()` returned true for our footage. Only `unlinkMedia` and
+      `relinkMedia` are absent, so relinking goes through `changeMediaPath`.
+- [ ] ~~Audio track mixer levels, as opposed to per clip levels.~~ **Blocked, with
+      evidence.** The classic audio track exposes only clips, id, mediaType, name and
+      transitions, and the QE audio track exposes only `setMute` and `isMuted`; there is
+      no `setVolume`, `getVolume` or `setPan` on either. The fader is visible as a track
+      component whose `matchName` is `AudioFader`, but that component exposes nothing
+      beyond id, name and matchName, with no property accessor of any kind. Per clip
+      levels via `set_audio_level` remain the only scriptable route.
 
 ## Phase 4 — workflows
 
@@ -67,9 +77,20 @@ signed with our own certificate.
 - [x] `match_grade` — copy a reference clip's correction onto others.
 - [x] `get_sequence_range` and `set_sequence_range` for partial exports. The range is
       now actually honoured by `export_sequence`; until Phase 6 it was set but unused.
-- [ ] Loudness pass: measure and normalise to a target instead of setting dB by hand.
-      Needs an actual loudness measurement, which Premiere does not expose to
-      scripting; may require rendering audio and analysing it outside Premiere.
+- [x] `analyse_loudness` — measure in LUFS to ITU-R BS.1770 and say how far the mix is
+      from a delivery target. Premiere genuinely exposes no loudness measurement, so
+      the tool renders the sequence audio with the shipped `Waveform Audio 48kHz 16-bit`
+      preset, decodes the WAV here and does the maths itself: K-weighting, 400ms blocks
+      at 75% overlap, absolute gate at -70 LUFS then the relative gate at -10 LU.
+      The K-weighting coefficients are derived analytically rather than hardcoded at
+      48kHz, so any sample rate works, and they reproduce the BS.1770 table to 1e-14.
+      Checked against EBU Tech 3341 sine cases: all within 0.02 LU of the expected
+      value, against a tolerance of 0.1. Digital silence correctly measures as nothing
+      rather than as a number.
+- [ ] Normalise to a target, as opposed to only measuring. `analyse_loudness` already
+      returns the exact gain needed; applying it means walking the clips on a track and
+      offsetting each level, which is easy, but the peak ceiling has to be respected or
+      a quiet mix gets pushed into clipping.
 
 
 ## Phase 5 — make it a real package
