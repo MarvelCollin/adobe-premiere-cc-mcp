@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -7,6 +7,7 @@ import { homedir, platform } from "node:os";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SOURCE = join(HERE, "..", "panel");
+const SIGNED = join(HERE, "..", "artifacts", "PremiereMcpLink.zxp");
 const FOLDER_NAME = "PremiereMcpLink";
 
 function extensionsDir() {
@@ -59,9 +60,22 @@ function main() {
 
   mkdirSync(root, { recursive: true });
   if (existsSync(target)) rmSync(target, { recursive: true, force: true });
-  cpSync(SOURCE, target, { recursive: true });
 
-  console.log(`Installed panel to ${target}`);
+  if (existsSync(SIGNED)) {
+    const staging = join(root, "PremiereMcpLink.zip");
+    copyFileSync(SIGNED, staging);
+    execFileSync(
+      "powershell",
+      ["-NoProfile", "-Command", `Expand-Archive -LiteralPath '${staging}' -DestinationPath '${target}' -Force`],
+      { stdio: "ignore" },
+    );
+    rmSync(staging, { force: true });
+    console.log(`Installed the signed package to ${target}`);
+  } else {
+    cpSync(SOURCE, target, { recursive: true });
+    console.log(`Installed the unsigned panel to ${target}`);
+    console.log("Premiere may refuse it. Run npm run sign-panel first for a signed build.");
+  }
   enableUnsignedExtensions();
   console.log("");
   console.log("Next:");

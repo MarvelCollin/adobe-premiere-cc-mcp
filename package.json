@@ -21,7 +21,8 @@
     "smoke": "node scripts/smoke.mjs",
     "verify": "node scripts/verify.mjs",
     "docs": "node scripts/docs.mjs",
-    "install-panel": "node scripts/install-panel.mjs"
+    "install-panel": "node scripts/install-panel.mjs",
+    "sign-panel": "node scripts/sign-panel.mjs"
   },
   "keywords": [
     "mcp",

@@ -30,7 +30,7 @@ from "the panel is not running".
 ## Requirements
 
 - Node.js 20.19+
-- Adobe Premiere Pro with an MCP bridge CEP panel installed and running
+- Adobe Premiere Pro 2020 or newer
 - Adobe Media Encoder is **not** required; exports use Premiere's own encoder
 
 ## Setup
@@ -38,7 +38,22 @@ from "the panel is not running".
 ```bash
 npm install
 npm run build
+npm run sign-panel      # signs panel/ into artifacts/PremiereMcpLink.zxp
+npm run install-panel   # installs it and sets PlayerDebugMode
 ```
+
+Then restart Premiere. The panel starts itself when Premiere becomes active, so
+there is nothing to open by hand; `Window > Extensions > Premiere MCP Link` shows
+its status and log if you want to watch it.
+
+Signing needs Adobe's `ZXPSignCmd` in `tools/`, from
+[Adobe-CEP/CEP-Resources](https://github.com/Adobe-CEP/CEP-Resources)
+(`ZXPSignCMD/4.1.103/win64`). `npm run sign-panel` generates a self-signed
+certificate the first time. Premiere refuses unsigned extensions even with
+`PlayerDebugMode` enabled, so signing is not optional.
+
+The server and panel meet in `%TEMP%\premiere-mcp-link`. Override it on both
+sides with `PREMIERE_MCP_BRIDGE_DIR` if you need to run two setups side by side.
 
 Register it with your MCP client, for example:
 
