@@ -59,7 +59,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-37 tools.
+40 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -69,6 +69,9 @@ Then ask the assistant to call `ping`.
 | `list_sequences` | — | List every sequence in the project and say which one is active. |
 | `set_active_sequence` | `sequence` | Make a sequence the active one, so every other tool operates on it. |
 | `create_sequence_from_items` | `name`, `item_ids` | Create a new sequence built from one or more project items, and confirm it exists. |
+| `check_edit` | `max_scale`, `max_audio_db` | Inspect the whole sequence and report the problems that quietly ruin an edit: clips scaled above 100 percent, stabilisers that were never analysed, audio above unity or with keyframes that spike, disabled clips, gaps on the main video track, muted tracks, and clips missing a grade while their neighbours have one. |
+| `contact_sheet` | `output_dir`, `track_index`, `limit` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
+| `get_grade` | — | Read the Lumetri Basic Correction values of every graded clip in one call, so a grade can be compared across shots without inspecting clips one at a time. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
 | `set_playhead` | `time_seconds` | Move the playhead to a time in seconds and read the position back. |
 | `set_track_state` | `track_type`, `track_index`, `muted` | Mute or unmute a video or audio track and read the state back. |

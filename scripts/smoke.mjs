@@ -69,7 +69,9 @@ async function main() {
   });
   child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" })}\n`);
 
-  const [first, second] = process.argv.slice(2);
+  const argv = process.argv.slice(2).filter((arg) => arg !== "--full");
+  const full = process.argv.includes("--full");
+  const [first, second] = argv;
 
   if (first === "--list") {
     const reply = await request("tools/list", {});
@@ -101,7 +103,9 @@ async function main() {
     const { failed, text } = render(await request("tools/call", { name, arguments: args }));
     if (failed) failures++;
     console.log(`\n${failed ? "FAIL" : "ok  "}  ${name}`);
-    console.log(text.length > 1500 ? `${text.slice(0, 1500)}\n  ...truncated` : text);
+    console.log(
+      full || text.length <= 1500 ? text : `${text.slice(0, 1500)}\n  ...truncated, pass --full for everything`,
+    );
   }
 
   console.log(`\n${calls.length - failures}/${calls.length} passed`);
