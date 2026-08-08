@@ -112,6 +112,9 @@ await check("list_effects", "list_effects", { kind: "video", filter: "lumetri" }
 await check("list_transitions", "list_transitions", { filter: "dissolve" });
 await check("list_export_presets", "list_export_presets", { filter: "Match Source", limit: 5 });
 await check("get_stabilizer_status", "get_stabilizer_status", {});
+await check("get_sequence_range", "get_sequence_range", {});
+await check("check_edit", "check_edit", {});
+await check("get_grade", "get_grade", {});
 await check("export_frame", "export_frame", {
   output_path: join(SCRATCH, "verify_frame.png"),
   time_seconds: midpoint,
@@ -129,6 +132,20 @@ await check("set_clip_enabled off", "set_clip_enabled", { node_id: lastVideo, en
 await check("set_clip_enabled on", "set_clip_enabled", { node_id: lastVideo, enabled: true });
 await check("set_scale", "set_scale", { node_id: firstVideo, scale: 100 });
 await check("set_lumetri", "set_lumetri", { node_id: firstVideo, contrast: 10 });
+await check("set_sequence_range", "set_sequence_range", {
+  in_seconds: 0,
+  out_seconds: Math.max(1, Math.round(sequence.durationSeconds / 2)),
+});
+if (videoClips.length > 1) {
+  await check("grade_clips", "grade_clips", {
+    node_ids: [firstVideo, videoClips[1].nodeId],
+    contrast: 10,
+  });
+  await check("match_grade", "match_grade", {
+    source_node_id: firstVideo,
+    target_node_ids: [videoClips[1].nodeId],
+  });
+}
 if (firstAudio) await check("set_audio_level", "set_audio_level", { node_id: firstAudio, db: -20 });
 await check("set_fade", "set_fade", { node_id: firstVideo, fade_in_seconds: 0.5 });
 await check("apply_effect", "apply_effect", { node_id: lastVideo, effect_name: "Gaussian Blur" });

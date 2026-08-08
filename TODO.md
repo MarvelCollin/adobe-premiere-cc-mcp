@@ -4,7 +4,7 @@ Where this project is going, in rough priority order.
 
 ## Status today
 
-- 41 tools, TypeScript, `npm run check` green (typecheck + 64 tests), CI green on push.
+- 44 tools, TypeScript, `npm run check` green (typecheck + 67 tests), CI green on push.
 - Every tool verified live on Premiere Pro 26.2, destructive ones included.
   `npm run verify -- --destructive` reruns the whole sweep on demand.
 - Transport is **our own signed CEP panel**, installed with `npm run install-panel`.
@@ -45,9 +45,11 @@ signed with our own certificate.
 
 - [x] `add_to_timeline`, `move_clip`, `trim_clip`, `set_clip_speed`.
 - [x] `create_sequence_from_items`, `list_sequences`, `set_active_sequence`.
-- [ ] Selection tools: select by name, range or colour label. Lower value than
-      expected, since tools address clips by node ID rather than by selection.
-- [ ] Work area and sequence in/out points, for partial exports.
+- [ ] Selection tools: select by name, range or colour label. Deliberately skipped:
+      every tool addresses clips by node ID, so selection adds a mode without adding
+      capability. Revisit only if a workflow actually needs the UI selection.
+- [x] Sequence in and out points, for partial exports. Work area is readable;
+      Premiere exposes no setter worth trusting, so in/out is the supported route.
 - [ ] Proxy attach and detach, offline media handling.
 - [ ] Audio track mixer levels, as opposed to per clip levels.
 
@@ -58,10 +60,12 @@ signed with our own certificate.
 - [x] `contact_sheet` — a still per clip, so a grade can be judged across the edit.
 - [x] `grade_clips` — apply one correction to a whole shot group in a single pass.
 - [x] `get_grade` — read every clip's grade at once for comparison.
+- [x] `match_grade` — copy a reference clip's correction onto others.
+- [x] `get_sequence_range` and `set_sequence_range` for partial exports.
 - [ ] Loudness pass: measure and normalise to a target instead of setting dB by hand.
       Needs an actual loudness measurement, which Premiere does not expose to
       scripting; may require rendering audio and analysing it outside Premiere.
-- [ ] `match_grade`: copy one clip's Basic Correction onto others as a starting point.
+
 
 ## Phase 5 — make it a real package
 
@@ -97,8 +101,10 @@ Host constraints, not bugs in our code. Worth re-testing on each Premiere releas
 
 - Is the stabiliser solve genuinely discarded on reopen, or re-analysed lazily?
   Decides whether a re-export is safe.
-- Does the file bridge hold up under rapid sequential calls, or is a request queue
-  needed in the client?
+- ~~Does the file bridge hold up under rapid sequential calls?~~ Answered: 20
+  concurrent `ping` calls all succeeded in 276ms, and 20 sequential ones in 2.9s
+  (~147ms each, dominated by the poll intervals). No request queue needed. Dropping
+  the panel poll below 150ms would cut latency if it ever matters.
 - `get_timeline` returns everything. At what sequence size is that too large to hand
   to a model, and should it paginate by track?
 - Worth supporting macOS, or is Windows enough?
