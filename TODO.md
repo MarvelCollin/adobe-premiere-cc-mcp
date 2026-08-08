@@ -4,9 +4,13 @@ Where this project is going, in rough priority order.
 
 ## Status today
 
-- 44 tools, TypeScript, `npm run check` green (typecheck + 67 tests), CI green on push.
+- 46 tools, TypeScript, `npm run check` green (typecheck + 69 tests), CI green on push.
 - Every tool verified live on Premiere Pro 26.2, destructive ones included.
   `npm run verify -- --destructive` reruns the whole sweep on demand.
+- All 46 exercised end to end against a nine up grid built in `Prau.prproj`
+  (`Trend_9Grid`), which is what surfaced the four defects fixed below. A grid is
+  a better test bed than a normal cut because nine tracks are live at once, so
+  anything that quietly measures or exports the wrong thing has nowhere to hide.
 - Transport is **our own signed CEP panel**, installed with `npm run install-panel`.
   Nothing in the stack is borrowed any more.
 
@@ -61,7 +65,8 @@ signed with our own certificate.
 - [x] `grade_clips` — apply one correction to a whole shot group in a single pass.
 - [x] `get_grade` — read every clip's grade at once for comparison.
 - [x] `match_grade` — copy a reference clip's correction onto others.
-- [x] `get_sequence_range` and `set_sequence_range` for partial exports.
+- [x] `get_sequence_range` and `set_sequence_range` for partial exports. The range is
+      now actually honoured by `export_sequence`; until Phase 6 it was set but unused.
 - [ ] Loudness pass: measure and normalise to a target instead of setting dB by hand.
       Needs an actual loudness measurement, which Premiere does not expose to
       scripting; may require rendering audio and analysing it outside Premiere.
@@ -79,6 +84,38 @@ signed with our own certificate.
 - [ ] Decide public vs private for the repo. Currently public.
 
 ---
+
+## Phase 6 — what the nine up grid caught — done
+
+Four defects, none of which the earlier sweeps could see because they all pass on a
+single track edit. Every one of them reported success while doing the wrong thing.
+
+- [x] **`analyse_clips` measured the sequence composite, not the clip.** It exported a
+      full frame at each clip's midpoint and attributed the whole frame's numbers to
+      that clip, so on the grid all nine clips returned byte identical stats, and on
+      the real edit the V1 readings were partly measuring the V2 overlay and the title
+      graphics above it. It now mutes every other video track for the pass and measures
+      only the rectangle the clip actually draws, computed from Motion Position, Scale
+      and the source dimensions, then restores the mute states. Verified against nine
+      cells measured independently outside Premiere: exact match, including the
+      rectangle origins.
+- [x] **`export_sequence` ignored the in and out points.** `ENCODE_ENTIRE` was
+      hardcoded, so `set_sequence_range` could never affect an export and the grid
+      rendered 9.6s including 3.6s of black tail. Added a `range` argument
+      (`entire`, `in_to_out`, `work_area`). Same sequence now exports 6.0s exactly.
+- [x] **`get_grade` never reported `tint`.** `grade_clips`, `set_lumetri` and
+      `match_grade` all write and read it, so a tint move was invisible to the one tool
+      meant for comparing grades across shots. Added it.
+- [x] **`set_clip_speed` confirmed the wrong thing.** It promised "twice as long" and
+      returned a duration that often does not change, because the clip keeps its slot
+      unless there is room to grow. A caller checking `durationAfter` would conclude it
+      failed when the speed had applied fine. It now reads the speed back off the QE
+      clip and returns `appliedSpeedPercent`, erroring if Premiere disagrees.
+
+`contact_sheet` has the same composite blind spot as `analyse_clips` had: it names each
+still after a clip but captures whatever the sequence shows, so a disabled clip writes a
+black frame under that clip's name. Left as is for now, since the stills are meant to be
+looked at rather than measured, but it should either isolate the same way or say so.
 
 ## Known Premiere limits
 
