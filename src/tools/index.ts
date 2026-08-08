@@ -18,6 +18,7 @@ import { motionTools } from "./motion.js";
 import { overviewTools } from "./overview.js";
 import { playheadTools } from "./playhead.js";
 import { projectTools } from "./project.js";
+import { qcTools } from "./qc.js";
 import { rangeTools } from "./range.js";
 import { reviewTools } from "./review.js";
 import { scopeTools } from "./scopes.js";
@@ -46,6 +47,7 @@ export const allTools: ToolDefinition[] = [
   ...beatTools,
   ...splitEditTools,
   ...motionTools,
+  ...qcTools,
   ...mediaTools,
   ...linkTools,
   ...editTools,

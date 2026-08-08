@@ -116,7 +116,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-60 tools.
+61 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -147,6 +147,7 @@ Then ask the assistant to call `ping`.
 | `cut_to_beats` | `track_index`, `grid`, `offset_seconds`, `limit`, `range`, `timeout_ms` | Razor a video track on the beat grid, so every cut lands on the music. |
 | `make_split_edit` | `cut_seconds`, `type`, `overlap_seconds`, `video_track`, `audio_track` | Turn a straight cut into a J or L cut, the technique that most separates professional cutting from amateur. |
 | `find_action_peaks` | `node_id`, `samples` | Measure movement across a clip and report where the action peaks, so a cut can land on the movement rather than near it. |
+| `check_delivery` | `samples`, `start_seconds`, `end_seconds` | Run the quality control pass a broadcaster would run before accepting a file. |
 | `list_project_items` | `limit` | List the project panel contents: bins and media, with the node ID of each. |
 | `import_media` | `file_paths`, `bin_name` | Import one or more media files into the project panel and confirm the item count grew. |
 | `create_bin` | `name` | Create a bin in the project panel and confirm it exists. |
