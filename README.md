@@ -94,7 +94,7 @@ Then ask the assistant to call `ping`.
 | `check_edit` | `max_scale`, `max_audio_db` | Inspect the whole sequence and report the problems that quietly ruin an edit: clips scaled above 100 percent, stabilisers that were never analysed, audio above unity or with keyframes that spike, disabled clips, gaps on the main video track, muted tracks, and clips missing a grade while their neighbours have one. |
 | `critique_edit` | `platform` | Judge the active sequence against what actually holds attention on a given platform, and say whether it is ready to post. |
 | `review_sequence` | `output_dir`, `frames`, `start_seconds`, `end_seconds` | One pass over a whole sequence for judging it rather than editing it: writes evenly spaced stills across the running time, measures each one, and reports the sequence settings alongside them. |
-| `contact_sheet` | `output_dir`, `track_index`, `limit` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
+| `contact_sheet` | `output_dir`, `track_index`, `limit`, `isolate` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
 | `analyse_frame` | `time_seconds` | Measure the image at a point in the sequence and suggest Basic Correction moves. |
 | `analyse_clips` | `track_index`, `limit` | Measure one frame per clip on a video track and report the numbers side by side, so shots can be grouped by how they actually look rather than by eye. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |

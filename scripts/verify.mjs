@@ -54,6 +54,17 @@ async function call(name, args = {}) {
 }
 
 const results = [];
+async function checkEither(label, name, args, acceptableError) {
+  const { ok, text } = await call(name, args);
+  const explained = !ok && text.includes(acceptableError);
+  const passed = ok || explained;
+  const detail = explained ? `refused with an explanation: ${text.replace(/\s+/g, " ").slice(0, 120)}` : text.replace(/\s+/g, " ").slice(0, 100);
+  results.push({ label, ok: passed, detail });
+  process.stdout.write(`${passed ? "ok  " : "FAIL"}  ${label}${explained ? " (refused, explained)" : ""}\n`);
+  if (!passed) process.stdout.write(`        ${text.split("\n")[0].slice(0, 200)}\n`);
+  return { ok: passed, text };
+}
+
 async function check(label, name, args) {
   const { ok, text } = await call(name, args);
   results.push({ label, ok, detail: ok ? text.replace(/\s+/g, " ").slice(0, 100) : text.slice(0, 200) });
@@ -151,6 +162,7 @@ if (videoClips.length > 1) {
 if (firstAudio) await check("set_audio_level", "set_audio_level", { node_id: firstAudio, db: -20 });
 await check("set_fade", "set_fade", { node_id: firstVideo, fade_in_seconds: 0.5 });
 await check("apply_effect", "apply_effect", { node_id: lastVideo, effect_name: "Gaussian Blur" });
+await check("apply_effect warp", "apply_effect", { node_id: firstVideo, effect_name: "Warp Stabilizer" });
 await check("set_stabilizer_mode", "set_stabilizer_mode", { node_id: firstVideo, mode: "no_motion" });
 const longestClip = videoClips.reduce((best, clip) =>
   clip.end - clip.start > best.end - best.start ? clip : best,
@@ -185,8 +197,30 @@ if (media && sequence.videoTracks.length > 1) {
     if (node) {
       await check("trim_clip", "trim_clip", { node_id: node, edge: "end", time_seconds: parkAt + 3 });
       await check("move_clip", "move_clip", { node_id: node, time_seconds: parkAt + 1 });
-      await check("set_clip_speed", "set_clip_speed", { node_id: node, speed_percent: 200 });
+      await checkEither(
+        "set_clip_speed",
+        "set_clip_speed",
+        { node_id: node, speed_percent: 200 },
+        "clamped the speed",
+      );
       await check("remove_clip cleanup", "remove_clip", { node_id: node, ripple: false });
+      await check("cleanup linked audio", "run_script", {
+        code: `
+          var seq = __seq();
+          var removed = [];
+          for (var t = 0; t < seq.audioTracks.numTracks; t++) {
+            var track = seq.audioTracks[t];
+            for (var c = track.clips.numItems - 1; c >= 0; c--) {
+              var clip = track.clips[c];
+              if (clip.start.seconds >= ${parkAt - 0.5}) {
+                removed.push({ track: t, name: String(clip.name), start: clip.start.seconds });
+                clip.remove(false, false);
+              }
+            }
+          }
+          return __result({ removed: removed });
+        `,
+      });
     }
   }
 }

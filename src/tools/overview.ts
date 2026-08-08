@@ -139,20 +139,26 @@ export const overviewTools = defineTools([
   {
     name: "contact_sheet",
     description:
-      "Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. Read the images afterwards to judge a grade across the whole edit at once instead of one frame at a time. Slow, since every frame is a real render.",
+      "Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. Read the images afterwards to judge a grade across the whole edit at once instead of one frame at a time. By default every other video track is hidden for the pass, so each still shows the clip it is named after rather than whatever was composited on top of it; the mute states are put back afterwards. Slow, since every frame is a real render.",
     schema: {
       output_dir: z.string().describe("Existing folder to write the stills into"),
       track_index: z.number().int().min(0).default(0).describe("Which video track, V1 is 0"),
       limit: z.number().int().positive().max(40).default(20).describe("Stop after this many clips"),
+      isolate: z
+        .boolean()
+        .default(true)
+        .describe("Hide other video tracks so each still shows only its own clip. False captures the finished composite instead"),
     },
     handler: async ({
       output_dir,
       track_index = 0,
       limit = 20,
+      isolate = true,
     }: {
       output_dir: string;
       track_index?: number;
       limit?: number;
+      isolate?: boolean;
     }) =>
       evaluate(
         `
@@ -162,6 +168,14 @@ export const overviewTools = defineTools([
         if (!folder.exists) return __error("Folder does not exist: " + folder.fsName);
         if (${track_index} >= seq.videoTracks.numTracks) {
           return __error("No video track at index ${track_index}");
+        }
+
+        var wasMuted = [];
+        if (${isolate}) {
+          for (var m = 0; m < seq.videoTracks.numTracks; m++) {
+            wasMuted.push(seq.videoTracks[m].isMuted() ? 1 : 0);
+            if (m !== ${track_index}) seq.videoTracks[m].setMute(1);
+          }
         }
 
         var track = seq.videoTracks[${track_index}];
@@ -196,7 +210,18 @@ export const overviewTools = defineTools([
           }
         }
 
-        return __result({ count: frames.length, frames: frames, failures: failures });
+        if (${isolate}) {
+          for (var r = 0; r < seq.videoTracks.numTracks && r < wasMuted.length; r++) {
+            seq.videoTracks[r].setMute(wasMuted[r]);
+          }
+        }
+
+        return __result({
+          count: frames.length,
+          isolated: ${isolate},
+          frames: frames,
+          failures: failures
+        });
       `,
         { timeoutMs: 600_000 },
       ),

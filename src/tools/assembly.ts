@@ -171,7 +171,11 @@ export const assemblyTools = defineTools([
         }
         if (appliedSpeed !== null && Math.abs(appliedSpeed - rate) > 0.01) {
           return __error(
-            "Premiere reported speed " + appliedSpeed + " after asking for " + rate
+            "Premiere clamped the speed to " + Math.round(appliedSpeed * 10000) / 100 +
+            "% after asking for ${speed_percent}%. Speeding a clip up consumes more source " +
+            "footage for the same slot, so this usually means the clip has no more media " +
+            "beyond its out point, or a neighbouring clip blocks the new duration. Trim the " +
+            "clip shorter first, or move what follows it."
           );
         }
 
