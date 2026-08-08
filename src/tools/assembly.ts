@@ -78,18 +78,52 @@ export const assemblyTools = defineTools([
   {
     name: "move_clip",
     description:
-      "Move a clip to a new start time on its own track and confirm it landed. The move fails if another clip already occupies the destination.",
+      "Move a clip to a new start time on its own track and confirm it landed. Refuses by default when another clip already occupies the destination, because Premiere's move overwrites whatever is in the way rather than pushing it aside. Pass overwrite to accept that and destroy what is there.",
     schema: {
       node_id: z.string().describe("Node ID of the timeline clip"),
       time_seconds: z.number().min(0).describe("New start time"),
+      overwrite: z
+        .boolean()
+        .default(false)
+        .describe("Allow the move to destroy clips already sitting at the destination"),
     },
-    handler: async ({ node_id, time_seconds }: { node_id: string; time_seconds: number }) =>
+    handler: async ({
+      node_id,
+      time_seconds,
+      overwrite = false,
+    }: {
+      node_id: string;
+      time_seconds: number;
+      overwrite?: boolean;
+    }) =>
       evaluate(`
         var found = __findClip("${esc(node_id)}");
         if (!found) return __error("Clip not found: ${esc(node_id)}");
         var clip = found.clip;
         var from = clip.start.seconds;
         var duration = clip.end.seconds - from;
+
+        if (!${overwrite}) {
+          var target = ${time_seconds};
+          var targetEnd = target + duration;
+          var group = found.trackType === "audio" ? __seq().audioTracks : __seq().videoTracks;
+          var lane = group[found.trackIndex];
+          var blocking = [];
+          for (var o = 0; o < lane.clips.numItems; o++) {
+            var other = lane.clips[o];
+            if (String(other.nodeId) === String(clip.nodeId)) continue;
+            if (other.start.seconds < targetEnd - 0.001 && other.end.seconds > target + 0.001) {
+              blocking.push(String(other.name) + " at " + other.start.seconds + "s to " + other.end.seconds + "s");
+            }
+          }
+          if (blocking.length > 0) {
+            return __error(
+              "Refusing to move " + String(clip.name) + " to " + target + "s: " +
+              blocking.join(", ") + " already occupies that span, and Premiere's move " +
+              "overwrites rather than ripples. Move the other clip first, or pass overwrite to destroy it."
+            );
+          }
+        }
 
         var qeTrack = __qeTrackFor(found);
         var qeClip = __qeClipAt(qeTrack, from);

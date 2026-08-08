@@ -140,7 +140,7 @@ Then ask the assistant to call `ping`.
 | `split_clip` | `track_type`, `track_index`, `time_seconds` | Cut every clip on a track at the given time, the same as the razor tool. |
 | `remove_clip` | `node_id`, `ripple` | Remove a clip from the timeline. |
 | `add_to_timeline` | `item_id`, `track_type`, `track_index`, `time_seconds`, `mode` | Place a project item onto a track at a given time and confirm the clip count grew. |
-| `move_clip` | `node_id`, `time_seconds` | Move a clip to a new start time on its own track and confirm it landed. |
+| `move_clip` | `node_id`, `time_seconds`, `overwrite` | Move a clip to a new start time on its own track and confirm it landed. |
 | `set_clip_speed` | `node_id`, `speed_percent` | Change a clip's playback speed. |
 | `trim_clip` | `node_id`, `edge`, `time_seconds` | Trim a clip's start or end on the timeline and confirm the new duration. |
 | `set_scale` | `node_id`, `scale` | Set a clip's Motion scale and read it back to confirm. |
