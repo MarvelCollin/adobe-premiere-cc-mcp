@@ -70,6 +70,13 @@ Register it with your MCP client, for example:
 
 Then ask the assistant to call `ping`.
 
+## Guides
+
+- [Recipes](docs/recipes.md) — worked examples: session start, grading, loudness,
+  partial export, and building a nine up grid end to end.
+- [Grading](docs/grading.md) — how to read the measurements and pick a correction,
+  plus look intensity by content type.
+
 ## Tools
 
 <!-- tools:start -->
