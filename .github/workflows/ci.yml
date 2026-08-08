@@ -7,7 +7,11 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,3 +21,35 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run build
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      - name: The published tarball must carry no secrets
+        run: |
+          npm pack --dry-run 2>&1 | tee /tmp/pack.txt
+          if grep -qiE '\.p12|ZXPSignCmd|\.pem|\.key' /tmp/pack.txt; then
+            echo "A certificate or signing binary would be published."
+            exit 1
+          fi
+          if ! grep -q 'artifacts/PremiereMcpLink.zxp' /tmp/pack.txt; then
+            echo "The signed panel is missing, so an install would not have a working bridge."
+            exit 1
+          fi
+
+      - name: The generated tool table must match the tools
+        run: |
+          npm run docs
+          if ! git diff --quiet -- README.md; then
+            echo "README tool table is stale. Run npm run docs and commit the result."
+            git --no-pager diff -- README.md
+            exit 1
+          fi

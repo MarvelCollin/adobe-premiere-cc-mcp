@@ -18,10 +18,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "os": [
-    "win32",
-    "darwin"
-  ],
   "bin": {
     "adobe-premiere-cc-mcp": "dist/index.js"
   },
