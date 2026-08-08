@@ -3,6 +3,7 @@ import { assemblyTools } from "./assembly.js";
 import { audioTools } from "./audio.js";
 import { colorTools } from "./color.js";
 import { connectionTools } from "./connection.js";
+import { critiqueTools } from "./critique.js";
 import { editTools } from "./edit.js";
 import { effectTools } from "./effects.js";
 import { exportTools } from "./export.js";
@@ -30,6 +31,7 @@ export const allTools: ToolDefinition[] = [
   ...timelineTools,
   ...sequenceTools,
   ...reviewTools,
+  ...critiqueTools,
   ...overviewTools,
   ...analysisTools,
   ...playheadTools,
