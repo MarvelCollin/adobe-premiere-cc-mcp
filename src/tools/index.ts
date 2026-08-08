@@ -14,6 +14,7 @@ import { linkTools } from "./links.js";
 import { loudnessTools } from "./loudness.js";
 import { markerTools } from "./markers.js";
 import { mediaTools } from "./media.js";
+import { motionTools } from "./motion.js";
 import { overviewTools } from "./overview.js";
 import { playheadTools } from "./playhead.js";
 import { projectTools } from "./project.js";
@@ -44,6 +45,7 @@ export const allTools: ToolDefinition[] = [
   ...markerTools,
   ...beatTools,
   ...splitEditTools,
+  ...motionTools,
   ...mediaTools,
   ...linkTools,
   ...editTools,
