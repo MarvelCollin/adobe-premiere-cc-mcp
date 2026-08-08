@@ -151,7 +151,12 @@ Host constraints, not our bugs. Re-test on each release.
   `critique_edit` warning that can only be fixed in the UI.
 - Creative Looks cannot be set by script; the name property accepts a string but the LUT
   never loads. Only intensity is scriptable.
-- No way to remove a single effect. QE offers only remove all.
+- No way to remove an effect at all, single or otherwise. QE's `removeEffects` is documented
+  as remove-all but on 26.2 it returns cleanly and removes nothing, with any argument list;
+  `removeAudioEffects` does not exist. Tested on a clip carrying nine audio effects, count
+  unchanged after every variant. Anything that adds an effect is therefore one way from a
+  script, which is why `clean_dialogue` reconfigures a component it finds rather than adding
+  a second one.
 - Track deletion has no working API.
 - Adjustment layers cannot be created by script.
 - Warp Stabilizer never re-analyses from a script, and its solve does not survive a
