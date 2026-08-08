@@ -21,7 +21,7 @@ with measurements handed to it.
 
 ## Status
 
-- 56 tools, 95 tests, live sweep clean, CI green on Windows and Linux across Node 20 and 22.
+- 61 tools, 125 tests, live sweep clean, CI green on Windows and Linux across Node 20 and 22.
 - Own signed CEP panel. Nothing borrowed.
 - Measurement already real: BS.1770 loudness, per-clip image statistics, spectral flux
   beat tracking validated against synthesised click tracks.
@@ -35,16 +35,14 @@ shots by them. Waveform for luminance, RGB parade for balance, vectorscope for h
 saturation, and the skin tone line, which sits near 123 degrees because the red of
 blood under skin is the same for everyone.
 
-- [ ] `read_scopes` — waveform, RGB parade, vectorscope and histogram computed from a
-      rendered frame and returned as data. A rendered PNG of the scope is a bonus, the
-      numbers are the point.
-- [ ] Skin tone measurement: isolate likely skin pixels, report their mean angle against
-      the 123 degree line and the deviation, since that is the single most reliable
-      objective check on whether faces look right.
-- [ ] `match_shots` — measure a reference clip and a target clip, then compute the
-      lift, gamma and gain moves that bring the target's parade and vectorscope onto the
-      reference. Apply, re-measure, report the residual error. This is the tool that
-      turns "grade by eye" into "grade by numbers".
+- [x] `read_scopes` — waveform percentiles, RGB parade, vectorscope and illegal level
+      share from a rendered frame. Refuses to describe a blank frame.
+- [x] Skin tone measurement against the 123 degree line, with a verdict on which way it
+      is off.
+- [x] `match_shots` — measures both clips, plans the moves, applies, re-measures and
+      corrects again. Damped to 0.6 so it converges instead of oscillating, and stops
+      when the weighted error stops falling by 5 percent. Reports the residual honestly
+      when two shots are lit too differently to match with primaries.
 - [ ] White balance from a neutral: given a point or region expected to be grey, compute
       and apply the temperature and tint that neutralise it.
 - [ ] Broadcast legality: flag luma outside 16 to 235 and out of gamut chroma, which is
@@ -55,10 +53,10 @@ blood under skin is the same for everyone.
 Research is unanimous on what separates professional cutting: split edits, cutting on
 action, and pacing that follows the content rather than a metronome.
 
-- [ ] `make_split_edit` — J and L cuts. Audio leads or trails the picture cut. Needs
-      audio and video unlinked and trimmed independently; verify the offset landed.
-- [ ] `find_action_peaks` — frame differencing across a clip to find the motion peak, so
-      a cut can land on the action rather than near it.
+- [x] `make_split_edit` — J and L cuts, verified by reading the audio and picture
+      boundaries back separately.
+- [x] `find_action_peaks` — frame differencing with an absolute floor, so a locked off
+      shot reports no action rather than inventing peaks from noise.
 - [ ] `analyse_pacing` — shot length distribution, longest and shortest holds, and where
       the rhythm stalls, measured against the platform norms already used by
       `critique_edit`.
@@ -86,11 +84,13 @@ Dialogue is where amateur work is most obvious, and every step here is measurabl
 This is the part a professional never skips and an amateur never does. Every check here
 is objective, which makes it a natural fit.
 
-- [ ] `check_delivery` — black frames, freeze frames, flash frames, colour bars left in,
-      and illegal levels, in one pass over the rendered file.
-- [ ] Photosensitive epilepsy screening. The published threshold is a luminance swing
-      above roughly 20 cd/m squared, faster than 3 Hz, across more than a quarter of the
-      frame. This is a duty of care check, not a nicety.
+- [x] `check_delivery` — black frames, freezes and flashing, collapsed into ranges
+      rather than one finding per sampled frame.
+- [x] Photosensitive epilepsy screening to the published threshold: a large luminance
+      swing across more than a quarter of the frame, faster than 3 Hz. Says plainly when
+      the sample interval was too coarse to be sure.
+- [ ] Colour bars left in, and illegal level checking over a rendered file rather than
+      sampled frames.
 - [ ] Verify an exported file against its intended spec: resolution, frame rate, bitrate,
       duration and loudness, so "it exported" becomes "it exported correctly".
 
