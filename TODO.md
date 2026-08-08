@@ -7,8 +7,8 @@ Where this project is going, in rough priority order.
 - 41 tools, TypeScript, `npm run check` green (typecheck + 64 tests), CI green on push.
 - Every tool verified live on Premiere Pro 26.2, destructive ones included.
   `npm run verify -- --destructive` reruns the whole sweep on demand.
-- Transport is still the **signed CEP panel from another project**. That is the one
-  piece of the stack we do not own.
+- Transport is **our own signed CEP panel**, installed with `npm run install-panel`.
+  Nothing in the stack is borrowed any more.
 
 ---
 
@@ -29,16 +29,17 @@ The CEP panel is borrowed. Replacing it is the difference between "our server" a
       response, heartbeats while busy, with a status UI and its own bridge folder
       (`premiere-mcp-link`) so it cannot clash with the borrowed one.
 - [x] `npm run install-panel` copies it and sets `PlayerDebugMode`.
-- [ ] **Blocked on signing.** Installed and restarted Premiere; the log says
-      `Signature verification failed for extension com.marvelcollin.premiere.mcp.headless`.
-      This is with `PlayerDebugMode` set to `1` as `REG_SZ` on CSXS 9 to 14 and both
-      extension IDs listed in `.debug`, so unsigned sideloading is simply refused on
-      this machine. Needs Adobe `ZXPSignCmd` plus a self-signed certificate to
-      package a `.zxp`. Until then the borrowed signed panel stays in use.
-- [ ] Ship `npm run install-panel` that copies the bundle, sets `PlayerDebugMode`,
-      and reports exactly what it did.
-- [ ] Panel UI showing connection state, last command and errors.
-- [ ] Drop the dependency on the other project entirely.
+- [x] Signed it. Unsigned sideloading is refused on this machine even with
+      `PlayerDebugMode` set to `1` as `REG_SZ` on CSXS 9 to 14 and every extension ID
+      listed in `.debug`, so signing is mandatory rather than optional.
+      `npm run sign-panel` generates a self-signed certificate and packages a `.zxp`.
+- [x] Panel UI showing connection state, counts and a live command log.
+- [x] **Dependency dropped.** The server defaults to `%TEMP%\premiere-mcp-link`,
+      which only our panel serves, and the full read-only sweep passes 12/12 through
+      it. The other project's panel is no longer involved.
+- [ ] Test the panel on a machine that has never had the other project installed,
+      to be sure nothing here depends on its leftovers.
+- [ ] macOS support in `install-panel`; the copy path exists but is untested.
 
 ## Phase 3 — remaining editing gaps
 
