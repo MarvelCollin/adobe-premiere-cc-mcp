@@ -59,7 +59,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-40 tools.
+41 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -89,6 +89,7 @@ Then ask the assistant to call `ping`.
 | `set_clip_speed` | `node_id`, `speed_percent` | Change a clip's playback speed. |
 | `trim_clip` | `node_id`, `edge`, `time_seconds` | Trim a clip's start or end on the timeline and confirm the new duration. |
 | `set_scale` | `node_id`, `scale` | Set a clip's Motion scale and read it back to confirm. |
+| `grade_clips` | `node_ids`, `add_lumetri_if_missing`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Apply the same Lumetri Basic Correction to a group of clips in one pass, then read every value back. |
 | `set_lumetri` | `node_id`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Set Lumetri Basic Correction values on a clip and read them back. |
 | `set_audio_level` | `node_id`, `db` | Set a clip's audio level in decibels and read it back. |
 | `set_fade` | `node_id`, `fade_in_seconds`, `fade_out_seconds` | Put a clean fade in and/or out on a clip: Opacity for video, Volume for audio. |

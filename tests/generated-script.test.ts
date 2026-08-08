@@ -46,6 +46,11 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   move_clip: { node_id: "000f4241", time_seconds: 8 },
   trim_clip: { node_id: "000f4241", edge: "end", time_seconds: 9 },
   set_clip_speed: { node_id: "000f4241", speed_percent: 200 },
+  set_active_sequence: { sequence: "C0007" },
+  create_sequence_from_items: { name: "Scratch", item_ids: ["000f4242"] },
+  contact_sheet: { output_dir: "C:/tmp/sheet", track_index: 0, limit: 5 },
+  grade_clips: { node_ids: ["000f4241", "000f4243"], contrast: 12, saturation: 110 },
+  check_edit: { max_scale: 100, max_audio_db: 0 },
 };
 
 describe("generated ExtendScript", () => {
@@ -66,6 +71,13 @@ describe("generated ExtendScript", () => {
       expect(script).toMatch(/__result\(|__error\(/);
     });
   }
+
+  it("has sample arguments for every tool that requires them", () => {
+    const missing = allTools
+      .filter((tool) => Object.keys(tool.schema).length > 0 && !SAMPLE_ARGS[tool.name])
+      .map((tool) => tool.name);
+    expect(missing, "add these to SAMPLE_ARGS so their scripts get covered").toEqual([]);
+  });
 
   it("wraps every tool body with the helper preamble", async () => {
     const tool = allTools.find((entry) => entry.name === "get_clip");
