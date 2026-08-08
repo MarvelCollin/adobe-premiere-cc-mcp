@@ -4,4 +4,5 @@ dist/
 .DS_Store
 tools/ZXPSignCmd.exe
 tools/*.p12
-artifacts/
+artifacts/*
+!artifacts/PremiereMcpLink.zxp

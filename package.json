@@ -29,7 +29,9 @@
   "files": [
     "dist",
     "panel",
-    "scripts/install-panel.mjs"
+    "artifacts/PremiereMcpLink.zxp",
+    "scripts/install-panel.mjs",
+    "docs"
   ],
   "scripts": {
     "build": "tsc",

@@ -1,0 +1,23 @@
+name: Premiere limitation
+description: Something Premiere will not let a script do
+labels: ["premiere limitation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        These are as useful as bug reports. An API that accepts a value and silently
+        ignores it costs the next person a day.
+  - type: input
+    id: version
+    attributes:
+      label: Premiere Pro version
+      placeholder: "26.2"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What you tried and how it failed
+      description: Silent no ops are worth spelling out; say how you proved nothing changed.
+    validations:
+      required: true

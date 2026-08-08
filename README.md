@@ -1,6 +1,13 @@
 # adobe-premiere-cc-mcp
 
-An MCP server for driving Adobe Premiere Pro from an AI assistant.
+[![CI](https://github.com/MarvelCollin/adobe-premiere-cc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/MarvelCollin/adobe-premiere-cc-mcp/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/adobe-premiere-cc-mcp.svg)](https://www.npmjs.com/package/adobe-premiere-cc-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Premiere Pro 26.2](https://img.shields.io/badge/Premiere%20Pro-26.2%20verified-9999ff.svg)](#)
+
+An MCP server for driving Adobe Premiere Pro from an AI assistant. Inspect a project, cut
+and arrange a timeline, grade by measurement rather than by eye, mix and normalise audio
+to a real loudness target, and export frames or finished video.
 
 The design goal is narrow: **a small set of tools that verify their own work.**
 Every write reads the value back, and the ones that cannot be verified say so
@@ -10,6 +17,31 @@ scripting calls return "No Error" while doing nothing at all.
 Built and verified against **Premiere Pro 26.2** on Windows. Every tool listed
 below has been run against a real project, not just typechecked, including the
 destructive ones.
+
+## What makes it different
+
+- **Measurement instead of guesswork.** `analyse_clips` renders each clip, isolates it
+  from the tracks above, and reports its black point, contrast and colour cast, so a
+  grade follows numbers rather than a hunch. `analyse_loudness` renders the audio and
+  measures true LUFS to ITU-R BS.1770, because Premiere exposes no loudness figure to a
+  script at all.
+- **Tools that admit failure.** `set_clip_speed` reads the speed back off the clip and
+  reports when Premiere clamped it. `get_stabilizer_status` says plainly that a clip was
+  never analysed. `export_sequence` confirms the file exists before claiming success.
+- **A verdict you can act on.** `critique_edit` judges a sequence against published short
+  form norms: what happens in the opening seconds, how often the picture changes, and
+  whether the message survives muted playback.
+- **Nothing borrowed.** The CEP panel that carries commands into Premiere was written
+  from the protocol for this project and is signed with its own certificate.
+
+## Documentation
+
+- [Recipes](docs/recipes.md) — session start, grading, loudness, partial export, and a
+  nine up grid built end to end.
+- [Grading](docs/grading.md) — how to read the measurements and choose a correction.
+- [Contributing](CONTRIBUTING.md) — the development loop and what a good change looks like.
+- [Security](SECURITY.md) — what this server can do to your machine, and the signing model.
+- [Roadmap](TODO.md) — what is done, what is blocked, and the Premiere limits found so far.
 
 Paths may be passed with forward or backslashes; they are normalised before they
 reach Premiere, because `exportAsMediaDirect` fails with a bare
@@ -69,13 +101,6 @@ Register it with your MCP client, for example:
 ```
 
 Then ask the assistant to call `ping`.
-
-## Guides
-
-- [Recipes](docs/recipes.md) — worked examples: session start, grading, loudness,
-  partial export, and building a nine up grid end to end.
-- [Grading](docs/grading.md) — how to read the measurements and pick a correction,
-  plus look intensity by content type.
 
 ## Tools
 

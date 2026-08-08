@@ -1,0 +1,39 @@
+name: Bug report
+description: A tool did the wrong thing, or reported success while doing nothing
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tools here are meant to verify their own writes. A tool that reports success
+        without changing anything is the most valuable kind of report.
+  - type: input
+    id: version
+    attributes:
+      label: Premiere Pro version
+      placeholder: "26.2"
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: Which tool
+      placeholder: "set_clip_speed"
+    validations:
+      required: true
+  - type: textarea
+    id: call
+    attributes:
+      label: What you ran
+      description: Ideally the smoke command, so it can be reproduced directly.
+      placeholder: "npm run smoke -- set_clip_speed '{\"node_id\":\"000f4241\",\"speed_percent\":200}'"
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened instead
+      description: If Premiere itself shows something different from what the tool returned, say so.
+    validations:
+      required: true
