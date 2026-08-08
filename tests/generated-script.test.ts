@@ -64,6 +64,16 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   read_scopes: { time_seconds: 3 },
   check_delivery: { samples: 8 },
   check_audio: { range: "entire", timeout_ms: 60000 },
+  clean_dialogue: {
+    track_index: 1,
+    high_pass_hz: 80,
+    ratio: 3,
+    attack_ms: 10,
+    release_ms: 100,
+    compress: true,
+    dry_run: true,
+    timeout_ms: 60000,
+  },
   duck_music: {
     music_track_index: 1,
     dialogue_track_indexes: [0],

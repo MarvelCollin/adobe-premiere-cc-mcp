@@ -1,6 +1,3 @@
-import { readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { z } from "zod";
 import { LEVEL_WINDOW_SECONDS, findAudioFaults } from "../analysis/audio-faults.js";
 import {
@@ -15,10 +12,9 @@ import {
   type PlannedKey,
   type Probe,
 } from "../analysis/ducking.js";
-import { decodeWav } from "../analysis/wav.js";
 import { evaluate } from "../bridge/client.js";
 import { esc } from "../bridge/script.js";
-import { renderWithFoundPreset } from "../premiere/encoder.js";
+import { renderIsolatedAudio } from "../premiere/isolate.js";
 import { defineTools } from "./types.js";
 
 interface MusicClip {
@@ -257,66 +253,10 @@ export const duckingTools = defineTools([
         };
       }
 
-      const wavPath = join(tmpdir(), `premiere-mcp-duck-${Date.now()}.wav`);
-      let renderError: unknown = null;
-
-      await evaluate(`
-        var seq = __seq();
-        if (!seq) return __error("No active sequence");
-        var tracks = seq.audioTracks;
-        var keep = [${numberList(dialogue)}];
-        var applied = [];
-        for (var t = 0; t < tracks.numTracks; t++) {
-          var wanted = true;
-          for (var k = 0; k < keep.length; k++) { if (keep[k] === t) wanted = false; }
-          tracks[t].setMute(wanted ? 1 : 0);
-          applied.push(tracks[t].isMuted());
-        }
-        return __result({ mutes: applied });
-      `);
-
-      try {
-        await renderWithFoundPreset("Waveform Audio", wavPath, "entire", timeout_ms);
-      } catch (error) {
-        renderError = error;
-      }
-
-      const restored = await evaluate<{ mutes: boolean[] }>(`
-        var seq = __seq();
-        if (!seq) return __error("No active sequence");
-        var tracks = seq.audioTracks;
-        var wanted = [${layout.mutes.map((muted) => (muted ? "1" : "0")).join(",")}];
-        var applied = [];
-        for (var t = 0; t < tracks.numTracks && t < wanted.length; t++) {
-          tracks[t].setMute(wanted[t]);
-          applied.push(tracks[t].isMuted());
-        }
-        return __result({ mutes: applied });
-      `).catch((error: unknown) => {
-        throw new Error(
-          `Measured the dialogue track but could not put the track mute states back (${String(error)}). Audio tracks other than ${dialogue.join(", ")} may still be muted in the timeline; check them before exporting.`,
-        );
-      });
-
-      const mutesRestored =
-        restored.mutes.length === layout.mutes.length &&
-        restored.mutes.every((muted, index) => muted === layout.mutes[index]);
-
-      if (renderError) throw renderError;
-
-      let detection;
-      let durationSeconds: number;
-      try {
-        const audio = decodeWav(readFileSync(wavPath));
-        durationSeconds = Math.round((audio.frames / audio.sampleRate) * 100) / 100;
-        detection = findDuckTriggers(findAudioFaults(audio).windows, LEVEL_WINDOW_SECONDS);
-      } finally {
-        try {
-          rmSync(wavPath, { force: true });
-        } catch {
-          /* the temp render is disposable */
-        }
-      }
+      const isolated = await renderIsolatedAudio(dialogue, timeout_ms, "duck");
+      const mutesRestored = isolated.mutesRestored;
+      const durationSeconds = isolated.durationSeconds;
+      const detection = findDuckTriggers(findAudioFaults(isolated.audio).windows, LEVEL_WINDOW_SECONDS);
 
       const measurement = {
         isolatedTracks: dialogue,

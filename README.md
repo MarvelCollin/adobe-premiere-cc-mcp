@@ -116,7 +116,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-63 tools.
+64 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -150,6 +150,7 @@ Then ask the assistant to call `ping`.
 | `check_delivery` | `samples`, `start_seconds`, `end_seconds` | Run the quality control pass a broadcaster would run before accepting a file. |
 | `check_audio` | `range`, `timeout_ms` | Render the mix and find the audio faults that ruin a delivery: passages clipped into distortion, stretches of dead silence, and a noise floor high enough to hear. |
 | `duck_music` | `music_track_index`, `dialogue_track_indexes`, `duck_db`, `attack_seconds`, `hold_seconds`, `release_seconds`, `on_existing_keyframes`, `dry_run`, `timeout_ms` | Pull a music bed down under the talking and let it back up in the gaps, the way a mixer rides a fader, instead of leaving one flat level for the whole timeline. |
+| `clean_dialogue` | `track_index`, `high_pass_hz`, `ratio`, `threshold_db`, `attack_ms`, `release_ms`, `compress`, `dry_run`, `timeout_ms` | Put the standard dialogue chain on a voice track and prove it did something: a high pass to kill rumble, then compression to even out the level. |
 | `list_project_items` | `limit` | List the project panel contents: bins and media, with the node ID of each. |
 | `import_media` | `file_paths`, `bin_name` | Import one or more media files into the project panel and confirm the item count grew. |
 | `create_bin` | `name` | Create a bin in the project panel and confirm it exists. |

@@ -21,7 +21,7 @@ with measurements handed to it.
 
 ## Status
 
-- 61 tools, 125 tests, live sweep clean, CI green on Windows and Linux across Node 20 and 22.
+- 64 tools, 182 tests, live sweep clean, CI green on Windows and Linux across Node 20 and 22.
 - Own signed CEP panel. Nothing borrowed.
 - Measurement already real: BS.1770 loudness, per-clip image statistics, spectral flux
   beat tracking validated against synthesised click tracks.
@@ -69,10 +69,22 @@ action, and pacing that follows the content rather than a metronome.
 
 Dialogue is where amateur work is most obvious, and every step here is measurable.
 
-- [ ] `clean_dialogue` — the standard chain applied and verified: high pass near 80 Hz to
-      kill rumble, compression around 3:1 to 4:1 to even out level, de-ess for harshness.
-- [ ] `duck_music` — detect speech presence from the rendered stems and keyframe the music
-      bed underneath it, rather than setting one static level for the whole timeline.
+- [x] `clean_dialogue` — high pass and compression applied and then measured back. The
+      threshold is read off the level the track actually peaks at, because a threshold set
+      from the average sits under everything and turns the whole take down instead of
+      levelling it, which is what the first version did. Proof of work is the gap between
+      the loud and quiet stretches narrowing, not the crest factor: a 10 ms attack never
+      catches single sample transients, so crest barely moves either way. No de-esser; see
+      the parameter note below.
+- [x] `duck_music` — isolates the dialogue track by muting the rest for one measurement
+      render, so what triggers the duck is what is on that track rather than the music
+      itself. Multiplies the clip's existing envelope instead of flattening it, so a fade
+      survives, and reports the measured duck depth so a second pass laid on top of the
+      first shows up as -24 dB rather than being silently accepted as -12.
+- [ ] De-esser. The mapping for its Center Frequency, Bandwidth and Threshold is not pinned
+      down, and a de-esser aimed at the wrong band does audible harm. Left out rather than
+      guessed. The route is the same one that worked for the EQ: decode the shipped defaults,
+      then confirm against a rendered measurement.
 - [ ] True peak and phase coherence checks alongside the loudness we already measure.
       Broadcast wants -24 LKFS with a -2 dBTP ceiling; streaming and social differ, and
       the targets are already in `analyse_loudness`.
@@ -118,6 +130,23 @@ subject is, and Premiere gives a script no subject detection at all.
 
 Host constraints, not our bugs. Re-test on each release.
 
+- Audio effect parameters come through scripting as bare 0 to 1 floats with no name, no
+  unit and no range. `Cutoff` reads 0.25 and nothing says whether that is Hz, a fraction of
+  Nyquist or something else. This is the strongest argument against a server that just wraps
+  scripting calls: handing a model `setValue(0.25)` is handing it nothing.
+  Worked out so far, in `src/premiere/audio-params.ts`:
+  - Parametric Equalizer frequencies: `v = (Hz - 20) / 23980`. Found by decoding the shipped
+    defaults, which come out as 50, 200, 800, 3200 and 12800 Hz, a clean four times series.
+    Confirmed against rendered audio: asking for 500 Hz measured -2.99 dB at 500 Hz, and
+    asking for 1500 Hz put the -3 dB point at 1506 Hz.
+  - Single-band Compressor: threshold `-60 + 60v`, ratio `1 + 29v`, attack `500v` ms,
+    release `5000v` ms, makeup `-30 + 60v` dB. Every one reproduces the shipped default.
+    Makeup confirmed by render: v=0.6 measured +6.01 dB.
+  - Still unknown: the legacy standalone Highpass, whose 0.25 default does not fit the EQ
+    mapping, and everything on the DeEsser.
+- Keyframe interpolation between values written by script is not linear. Plateaus are exact,
+  ramps curve. Write the endpoints you care about as keyframes rather than trusting the shape
+  in between.
 - Captions and titles cannot be created by script at all. This is the one open
   `critique_edit` warning that can only be fixed in the UI.
 - Creative Looks cannot be set by script; the name property accepts a string but the LUT
