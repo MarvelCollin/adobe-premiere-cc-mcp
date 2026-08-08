@@ -51,21 +51,48 @@ Then ask the assistant to call `ping`.
 
 ## Tools
 
+**Inspect**
+
 | Tool | What it does |
 | --- | --- |
 | `ping` | Confirm Premiere and the bridge are alive |
 | `get_timeline` | Every track and clip with node IDs, timing, effects, scale |
 | `get_clip` | One clip in full, including every effect property |
+| `get_playhead` | Playhead position in seconds and timecode |
+| `list_project_items` | Bins and media in the project panel |
+| `list_effects` / `list_transitions` | Exact names to pass to the apply tools |
+| `list_export_presets` | Presets on disk, including Premiere's own |
+| `get_stabilizer_status` | Which clips are actually solved, not just configured |
+
+**Edit**
+
+| Tool | What it does |
+| --- | --- |
+| `set_playhead` | Move the playhead, bounds checked |
+| `split_clip` | Razor a track at a time, verified by clip count |
+| `remove_clip` | Ripple or lift a clip off the timeline |
+| `set_clip_enabled` | Disable a shot without deleting it |
+| `set_track_state` | Mute or hide a track |
+| `add_marker` / `list_markers` / `delete_marker` | Sequence markers |
+| `import_media` / `create_bin` | Bring footage in, optionally into a bin |
+
+**Look and sound**
+
+| Tool | What it does |
+| --- | --- |
 | `set_scale` | Set Motion scale, verified |
 | `set_lumetri` | Basic Correction values, verified |
+| `apply_effect` | Attach an effect by name, verified |
+| `add_transition` | Transition at a clip edge, verified on the track |
+| `set_stabilizer_mode` | No Motion vs Smooth Motion, reports if analysis is still needed |
 | `set_audio_level` | Set level in dB, clears conflicting keyframes first |
 | `set_fade` | Clean fade in/out on Opacity or Volume |
-| `list_effects` | Every applicable video or audio effect name |
-| `apply_effect` | Attach an effect by name, verified |
-| `get_stabilizer_status` | Which clips are actually solved, not just configured |
-| `set_stabilizer_mode` | No Motion vs Smooth Motion, reports if analysis is still needed |
+
+**Deliver**
+
+| Tool | What it does |
+| --- | --- |
 | `export_frame` | Full resolution still, so you can look at the result |
-| `list_export_presets` | Presets on disk, including Premiere's own |
 | `export_sequence` | Render with Premiere's encoder, output verified on disk |
 | `save_project` | Save; nothing auto-saves |
 | `run_script` | Raw ExtendScript escape hatch |
@@ -97,8 +124,27 @@ These cost real debugging time and are encoded in the tools:
 ```bash
 npm run dev     # tsc --watch
 npm test        # vitest
-npm run check   # typecheck + tests
+npm run check   # typecheck + tests, no build
+npm run build   # emit dist/
 ```
+
+### Testing against a live Premiere without restarting your assistant
+
+An MCP client loads the server once at startup, so a rebuild does not reach it
+until the client restarts. `npm run smoke` skips the client entirely and drives
+the built server over stdio the same way:
+
+```bash
+npm run build
+npm run smoke                                    # read-only sweep
+npm run smoke -- --list                          # tool names
+npm run smoke -- ping
+npm run smoke -- get_clip '{"node_id":"000f4241"}'
+npm run smoke -- export_frame '{"output_path":"C:/tmp/check.png","time_seconds":12}'
+```
+
+That is the fast loop: edit, `npm run build`, `npm run smoke -- <tool>`. Restart
+the assistant only when you want the new tools exposed to it.
 
 ## License
 
