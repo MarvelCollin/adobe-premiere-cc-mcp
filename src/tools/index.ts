@@ -1,6 +1,7 @@
 import { analysisTools } from "./analysis.js";
 import { assemblyTools } from "./assembly.js";
 import { beatTools } from "./beats.js";
+import { audioCheckTools } from "./audiocheck.js";
 import { audioTools } from "./audio.js";
 import { colorTools } from "./color.js";
 import { connectionTools } from "./connection.js";
@@ -48,6 +49,7 @@ export const allTools: ToolDefinition[] = [
   ...splitEditTools,
   ...motionTools,
   ...qcTools,
+  ...audioCheckTools,
   ...mediaTools,
   ...linkTools,
   ...editTools,

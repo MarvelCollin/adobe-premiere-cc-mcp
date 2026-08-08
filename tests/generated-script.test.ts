@@ -63,6 +63,7 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   analyse_frame: { time_seconds: 3 },
   read_scopes: { time_seconds: 3 },
   check_delivery: { samples: 8 },
+  check_audio: { range: "entire", timeout_ms: 60000 },
   find_action_peaks: { node_id: "000f4241", samples: 6 },
   make_split_edit: { cut_seconds: 5, type: "l", overlap_seconds: 0.5, video_track: 0, audio_track: 0 },
   match_shots: { reference_node_id: "000f4241", target_node_ids: ["000f4243"], apply: false },
