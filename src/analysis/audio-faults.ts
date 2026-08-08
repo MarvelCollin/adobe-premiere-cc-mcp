@@ -16,7 +16,9 @@ export interface AudioFaults {
   summary: string;
 }
 
-const WINDOW_SECONDS = 0.05;
+export const LEVEL_WINDOW_SECONDS = 0.05;
+
+const WINDOW_SECONDS = LEVEL_WINDOW_SECONDS;
 const SILENCE_DB = -60;
 const CLIP_THRESHOLD = 0.999;
 const ACTIVE_MARGIN_DB = 12;

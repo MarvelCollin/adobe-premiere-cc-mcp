@@ -6,6 +6,7 @@ import { audioTools } from "./audio.js";
 import { colorTools } from "./color.js";
 import { connectionTools } from "./connection.js";
 import { critiqueTools } from "./critique.js";
+import { duckingTools } from "./ducking.js";
 import { editTools } from "./edit.js";
 import { effectTools } from "./effects.js";
 import { exportTools } from "./export.js";
@@ -50,6 +51,7 @@ export const allTools: ToolDefinition[] = [
   ...motionTools,
   ...qcTools,
   ...audioCheckTools,
+  ...duckingTools,
   ...mediaTools,
   ...linkTools,
   ...editTools,

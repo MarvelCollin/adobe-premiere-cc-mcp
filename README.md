@@ -116,7 +116,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-62 tools.
+63 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -149,6 +149,7 @@ Then ask the assistant to call `ping`.
 | `find_action_peaks` | `node_id`, `samples` | Measure movement across a clip and report where the action peaks, so a cut can land on the movement rather than near it. |
 | `check_delivery` | `samples`, `start_seconds`, `end_seconds` | Run the quality control pass a broadcaster would run before accepting a file. |
 | `check_audio` | `range`, `timeout_ms` | Render the mix and find the audio faults that ruin a delivery: passages clipped into distortion, stretches of dead silence, and a noise floor high enough to hear. |
+| `duck_music` | `music_track_index`, `dialogue_track_indexes`, `duck_db`, `attack_seconds`, `hold_seconds`, `release_seconds`, `on_existing_keyframes`, `dry_run`, `timeout_ms` | Pull a music bed down under the talking and let it back up in the gaps, the way a mixer rides a fader, instead of leaving one flat level for the whole timeline. |
 | `list_project_items` | `limit` | List the project panel contents: bins and media, with the node ID of each. |
 | `import_media` | `file_paths`, `bin_name` | Import one or more media files into the project panel and confirm the item count grew. |
 | `create_bin` | `name` | Create a bin in the project panel and confirm it exists. |
