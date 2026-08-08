@@ -25,10 +25,16 @@ Where this project is going, in rough priority order.
 The CEP panel is borrowed. Replacing it is the difference between "our server" and
 "our tool". This is now the largest remaining gap.
 
-- [ ] Write our own CEP panel: poll the temp folder, `evalScript`, write the
-      response, heartbeat while busy. The protocol is a handful of files.
-- [ ] Self-sign it. Unsigned extensions do **not** load on this machine, proven the
-      hard way. Needs Adobe `ZXPSignCmd` and a self-signed certificate.
+- [x] Write our own CEP panel: polls the temp folder, `evalScript`, writes the
+      response, heartbeats while busy, with a status UI and its own bridge folder
+      (`premiere-mcp-link`) so it cannot clash with the borrowed one.
+- [x] `npm run install-panel` copies it and sets `PlayerDebugMode`.
+- [ ] **Blocked on signing.** Installed and restarted Premiere; the log says
+      `Signature verification failed for extension com.marvelcollin.premiere.mcp.headless`.
+      This is with `PlayerDebugMode` set to `1` as `REG_SZ` on CSXS 9 to 14 and both
+      extension IDs listed in `.debug`, so unsigned sideloading is simply refused on
+      this machine. Needs Adobe `ZXPSignCmd` plus a self-signed certificate to
+      package a `.zxp`. Until then the borrowed signed panel stays in use.
 - [ ] Ship `npm run install-panel` that copies the bundle, sets `PlayerDebugMode`,
       and reports exactly what it did.
 - [ ] Panel UI showing connection state, last command and errors.
