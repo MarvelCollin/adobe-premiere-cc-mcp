@@ -135,6 +135,29 @@ onto an audio track. Nine cells therefore give you nine audio tracks playing at 
 under your music. Mute or remove them with `set_track_state` before you export, and check
 `get_timeline(track_type="audio")` rather than assuming.
 
+## Judge whether an edit is ready to post
+
+```
+critique_edit(platform="reels")
+```
+
+Read only and fast, since it works from the timeline rather than rendering. It reports
+the format, how often the picture changes, what happens in the opening seconds, and
+whether anything on screen carries the message without sound, then lists what departs
+from that platform's norms.
+
+The thresholds are not taste. The opening seconds decide whether a viewer stays, short
+form expects a meaningful visual change every two to three seconds, and most short form
+viewing is muted, so an edit carrying its message only in audio loses most of its
+audience.
+
+It cannot see composition. Pair it with `review_sequence` and actually read the stills,
+and with `analyse_loudness` for level.
+
+A worked example: a nine up grid where every cell started at the same moment scored zero
+visual changes in the opening three seconds. Staggering the cell entrances two tenths of
+a second apart took it from ten cuts per minute to ninety, and from failing to postable.
+
 ## When a tool seems to do nothing
 
 - `set_clip_speed` holds the clip's slot on the timeline unless there is room to grow, so

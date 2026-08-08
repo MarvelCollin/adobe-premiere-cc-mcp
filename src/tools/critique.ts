@@ -84,6 +84,8 @@ export const critiqueTools = defineTools([
         transitions: number;
         boundaries: number[];
         mainTrackClips: number;
+        inPointSeconds: number | null;
+        outPointSeconds: number | null;
       }>(`
         var seq = __seq();
         if (!seq) return __error("No active sequence");
@@ -130,7 +132,23 @@ export const critiqueTools = defineTools([
 
         boundaries.sort(function (x, y) { return x - y; });
 
+        var inPoint = null;
+        var outPoint = null;
+        try {
+          var readIn = __ticksToSeconds(seq.getInPointAsTime().ticks);
+          var readOut = __ticksToSeconds(seq.getOutPointAsTime().ticks);
+          if (readOut > readIn) {
+            inPoint = readIn;
+            outPoint = readOut;
+          }
+        } catch (rangeError) {
+          inPoint = null;
+          outPoint = null;
+        }
+
         return __result({
+          inPointSeconds: inPoint,
+          outPointSeconds: outPoint,
           name: String(seq.name),
           width: seq.frameSizeHorizontal,
           height: seq.frameSizeVertical,
@@ -182,11 +200,20 @@ export const critiqueTools = defineTools([
           detail: `Aspect is ${aspect}, not the 0.5625 that 9:16 gives. Expect padding on ${profile.label}.`,
         });
       }
-      if (timeline.durationSeconds - runtime > 0.5) {
+      const tail = Math.round((timeline.durationSeconds - runtime) * 100) / 100;
+      const rangeCoversContent =
+        timeline.outPointSeconds !== null &&
+        timeline.inPointSeconds !== null &&
+        timeline.outPointSeconds <= runtime + 0.1 &&
+        timeline.outPointSeconds > timeline.inPointSeconds;
+
+      if (tail > 0.5) {
         findings.push({
-          severity: "blocker",
+          severity: rangeCoversContent ? "note" : "blocker",
           area: "duration",
-          detail: `The sequence runs to ${timeline.durationSeconds}s but content stops at ${Math.round(runtime * 100) / 100}s, so an unbounded export ends with ${Math.round((timeline.durationSeconds - runtime) * 100) / 100}s of black. Set an in and out range and export with range in_to_out.`,
+          detail: rangeCoversContent
+            ? `The sequence runs to ${timeline.durationSeconds}s though content stops at ${Math.round(runtime * 100) / 100}s. An in and out range of ${timeline.inPointSeconds}s to ${timeline.outPointSeconds}s already covers the content, so export with range in_to_out and the ${tail}s of black never lands. Premiere will not let a script shorten a sequence, so the stale end has to stay.`
+            : `The sequence runs to ${timeline.durationSeconds}s but content stops at ${Math.round(runtime * 100) / 100}s, so an unbounded export ends with ${tail}s of black. Set an in and out range with set_sequence_range and export with range in_to_out.`,
         });
       }
       if (profile.maxDurationSeconds && runtime > profile.maxDurationSeconds) {

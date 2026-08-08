@@ -189,6 +189,31 @@ Host constraints, not bugs in our code. Worth re-testing on each Premiere releas
 - **Any modal dialog freezes the bridge.** The client now says so on timeout.
 - **`openDocument` did not open a project** from the Home screen; it returned cleanly
   and nothing loaded.
+- **`sequence.end` is read only in practice.** Assigning to it raises no error and
+  changes nothing, so a sequence whose clips were trimmed keeps its original longer end
+  and an unbounded export writes a black tail. The in and out range plus
+  `range: "in_to_out"` is the only fix; `critique_edit` checks for exactly this.
+
+---
+
+## Platform risk: CEP and ExtendScript are on the way out
+
+Worth knowing before investing further, established by research rather than guesswork.
+
+- Premiere Pro 2026 ships **UXP** as the supported extensibility platform. CEP still
+  works — this server is the proof, running against 26.2 — but Adobe has said new
+  development goes to UXP and that CEP will eventually stop being loaded.
+- Reports of a hard **September 2026 ExtendScript cutoff** exist, but Adobe has not
+  published a firm date and third party developers note the timeline is deliberately
+  vague. Treat it as a real direction rather than a scheduled outage, and do not panic
+  rewrite on the strength of a forum summary.
+- What a migration would cost here: UXP calls are asynchronous and do not block the UI,
+  which suits this server's bridge model well. The hard part is that **QE DOM has no UXP
+  equivalent**, and this project depends on QE for adding tracks, transitions, clip
+  speed and frame export. Those would need new routes or would be lost.
+- Sensible next step is not a rewrite. It is a spike: check whether UXP exposes frame
+  export, track creation and Lumetri writes, since those decide whether a port is even
+  possible. Until then CEP is the correct choice.
 
 ## Open questions
 
