@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { evaluate } from "../bridge/client.js";
+import { esc } from "../bridge/script.js";
+import { toHostPath } from "../premiere/paths.js";
 import { LUMETRI_PROPERTY, WARP_PROPERTY } from "../premiere/constants.js";
 import { defineTools } from "./types.js";
 
@@ -158,7 +160,7 @@ export const reviewTools = defineTools([
         `
         var seq = __seq();
         if (!seq) return __error("No active sequence");
-        var folder = new Folder("${output_dir.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}");
+        var folder = new Folder("${esc(toHostPath(output_dir))}");
         if (!folder.exists) return __error("Folder does not exist: " + folder.fsName);
         if (${track_index} >= seq.videoTracks.numTracks) {
           return __error("No video track at index ${track_index}");
