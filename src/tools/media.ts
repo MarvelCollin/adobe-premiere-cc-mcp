@@ -90,9 +90,29 @@ export const mediaTools = defineTools([
         if (after.length <= before.length) {
           return __error("Import ran but no new project items appeared. Is the format supported?");
         }
+        var landed = [];
+        var missing = [];
+        for (var f = 0; f < paths.length; f++) {
+          var parts = String(paths[f]).split("\\\\");
+          var fileName = parts[parts.length - 1];
+          var inTarget = false;
+          for (var t = 0; t < target.children.numItems; t++) {
+            if (String(target.children[t].name) === fileName) { inTarget = true; break; }
+          }
+          if (inTarget) landed.push(fileName); else missing.push(fileName);
+        }
+
+        if (missing.length > 0) {
+          return __error(
+            "Premiere imported the media but left " + missing.join(", ") +
+            " outside the requested destination, so the bin argument was not honoured."
+          );
+        }
+
         return __result({
           imported: paths.length,
           bin: ${bin_name ? `"${esc(bin_name)}"` : "null"},
+          landedInTarget: landed,
           itemsBefore: before.length,
           itemsAfter: after.length
         });

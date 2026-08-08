@@ -39,7 +39,7 @@ export const beatTools = defineTools([
   {
     name: "detect_beats",
     description:
-      "Find the tempo of the sequence audio and return the beat grid, without changing anything. Renders the mix, measures onset strength across the spectrum, then recovers BPM by autocorrelation and locks the phase to the loudest onsets. Returns beat times, downbeat times and a confidence figure. Low confidence means the music has no steady pulse, or the mix is mostly speech, and the grid should not be trusted for cutting.",
+      "Find the tempo of the sequence audio and return the beat grid, without changing anything. Renders the mix, measures onset strength across the spectrum, then recovers BPM by autocorrelation and locks the phase to the loudest onsets. Returns beat times, downbeat times and a confidence figure. Two caveats worth knowing: low confidence means the music has no steady pulse, or the mix is mostly speech, and the grid should not be trusted for cutting; and every tempo tracker confuses half and double time, so the halfTime and doubleTime figures are given alongside in case the reported BPM feels twice or half as fast as the music.",
     schema: {
       range: z.enum(EXPORT_RANGES).default("entire").describe("Which part of the sequence to analyse"),
       timeout_ms: z.number().int().positive().default(600_000),
@@ -54,6 +54,8 @@ export const beatTools = defineTools([
       const analysis = await analyseSequenceAudio(range, timeout_ms);
       return {
         bpm: analysis.bpm,
+        halfTime: Math.round((analysis.bpm / 2) * 10) / 10,
+        doubleTime: Math.round(analysis.bpm * 2 * 10) / 10,
         confidence: analysis.confidence,
         reliable: analysis.confidence >= 0.35,
         beatsPerBar: analysis.beatsPerBar,
