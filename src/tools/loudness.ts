@@ -3,11 +3,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
 import { evaluate } from "../bridge/client.js";
-import { esc } from "../bridge/script.js";
 import { measureLoudness } from "../analysis/loudness.js";
 import { decodeWav } from "../analysis/wav.js";
-import { PRESET_SUBFOLDERS } from "../premiere/constants.js";
-import { toHostPath } from "../premiere/paths.js";
+import { EXPORT_RANGES, renderWithFoundPreset, type ExportRange } from "../premiere/encoder.js";
 import { defineTools } from "./types.js";
 
 const TARGETS: Record<string, number> = {
@@ -17,69 +15,14 @@ const TARGETS: Record<string, number> = {
   podcast: -16,
 };
 
-type ExportRange = "entire" | "in_to_out" | "work_area";
-
-function scopeExpression(range: ExportRange): string {
-  if (range === "in_to_out") return "app.encoder.ENCODE_IN_TO_OUT";
-  if (range === "work_area") return "app.encoder.ENCODE_WORKAREA";
-  return "app.encoder.ENCODE_ENTIRE";
-}
-
-async function renderAudio(range: ExportRange, timeoutMs: number): Promise<{ path: string; preset: string }> {
-  const wavPath = join(tmpdir(), `premiere-mcp-loudness-${Date.now()}.wav`);
-
-  const rendered = await evaluate<{ preset: string }>(
-    `
-    var seq = __seq();
-    if (!seq) return __error("No active sequence");
-
-    var roots = [];
-    var startup = Folder.startup.fsName;
-    ${PRESET_SUBFOLDERS.map(
-      (sub) => `(function () { var f = new Folder(startup + "/${sub}"); if (f.exists) roots.push(f); })();`,
-    ).join("\n    ")}
-
-    var preset = null;
-    function walk(folder, depth) {
-      if (!folder || !folder.exists || depth > 4 || preset) return;
-      var entries = folder.getFiles();
-      for (var i = 0; i < entries.length; i++) {
-        if (preset) return;
-        var entry = entries[i];
-        if (entry instanceof Folder) { walk(entry, depth + 1); continue; }
-        var fileName = decodeURI(entry.displayName);
-        if (fileName.slice(-4).toLowerCase() !== ".epr") continue;
-        if (fileName.toLowerCase().indexOf("waveform audio") === 0) { preset = entry; return; }
-      }
-    }
-    for (var r = 0; r < roots.length; r++) walk(roots[r], 0);
-    if (!preset) return __error("No Waveform Audio .epr preset found; cannot render audio to measure it");
-
-    var scope = ${scopeExpression(range)};
-    if (typeof scope !== "number") {
-      return __error("This Premiere build does not expose the ${range} export scope");
-    }
-
-    var reported = seq.exportAsMediaDirect("${esc(toHostPath(wavPath))}", preset.fsName, scope);
-    var written = new File("${esc(toHostPath(wavPath))}");
-    if (!written.exists) {
-      return __error("Audio render reported '" + reported + "' but wrote no file");
-    }
-    return __result({ preset: decodeURI(preset.displayName) });
-  `,
-    { timeoutMs },
-  );
-
-  return { path: wavPath, preset: rendered.preset };
-}
-
 async function measureSequence(range: ExportRange, timeoutMs: number) {
-  const { path } = await renderAudio(range, timeoutMs);
+  const wavPath = join(tmpdir(), `premiere-mcp-loudness-${Date.now()}.wav`);
+  await renderWithFoundPreset("Waveform Audio", wavPath, range, timeoutMs);
   try {
-    return measureLoudness(decodeWav(readFileSync(path)));
+    return measureLoudness(decodeWav(readFileSync(wavPath)));
   } finally {
     try {
-      rmSync(path, { force: true });
+      rmSync(wavPath, { force: true });
     } catch {
       /* the temp render is disposable */
     }
@@ -104,7 +47,7 @@ export const loudnessTools = defineTools([
         .min(0)
         .optional()
         .describe("Restrict to one audio track, A1 is 0. Omit to move the whole mix, which is usually what you want"),
-      range: z.enum(["entire", "in_to_out", "work_area"]).default("entire"),
+      range: z.enum(EXPORT_RANGES).default("entire"),
       allow_clipping: z
         .boolean()
         .default(false)
@@ -120,7 +63,7 @@ export const loudnessTools = defineTools([
     }: {
       target?: keyof typeof TARGETS;
       track_index?: number;
-      range?: "entire" | "in_to_out" | "work_area";
+      range?: ExportRange;
       allow_clipping?: boolean;
       timeout_ms?: number;
     }) => {
@@ -247,7 +190,7 @@ export const loudnessTools = defineTools([
       timeout_ms = 600_000,
     }: {
       target?: keyof typeof TARGETS;
-      range?: "entire" | "in_to_out" | "work_area";
+      range?: ExportRange;
       timeout_ms?: number;
     }) => {
       const stats = await measureSequence(range, timeout_ms);

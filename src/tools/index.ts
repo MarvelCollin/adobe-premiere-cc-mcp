@@ -6,11 +6,13 @@ import { connectionTools } from "./connection.js";
 import { editTools } from "./edit.js";
 import { effectTools } from "./effects.js";
 import { exportTools } from "./export.js";
+import { gradeReadTools } from "./grade-read.js";
 import { keyframeTools } from "./keyframes.js";
 import { linkTools } from "./links.js";
 import { loudnessTools } from "./loudness.js";
 import { markerTools } from "./markers.js";
 import { mediaTools } from "./media.js";
+import { overviewTools } from "./overview.js";
 import { playheadTools } from "./playhead.js";
 import { projectTools } from "./project.js";
 import { rangeTools } from "./range.js";
@@ -28,6 +30,7 @@ export const allTools: ToolDefinition[] = [
   ...timelineTools,
   ...sequenceTools,
   ...reviewTools,
+  ...overviewTools,
   ...analysisTools,
   ...playheadTools,
   ...rangeTools,
@@ -39,6 +42,7 @@ export const allTools: ToolDefinition[] = [
   ...assemblyTools,
   ...transformTools,
   ...colorTools,
+  ...gradeReadTools,
   ...audioTools,
   ...loudnessTools,
   ...keyframeTools,

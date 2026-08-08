@@ -1,32 +1,10 @@
-import { readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { evaluate } from "../bridge/client.js";
-import { esc } from "../bridge/script.js";
 import { measureFrame, suggestGrade } from "../analysis/frame-stats.js";
 import { decodePng, type DecodedImage } from "../analysis/png.js";
-import { toHostPath } from "../premiere/paths.js";
+import { discardStill as discard, exportStill } from "../premiere/still.js";
 import { defineTools } from "./types.js";
-
-async function exportStill(atSeconds: number, label: string): Promise<string> {
-  const target = join(tmpdir(), `premiere-mcp-analysis-${label}-${Date.now()}.png`);
-  await evaluate(
-    `
-    var seq = __seq();
-    if (!seq) return __error("No active sequence");
-    seq.setPlayerPosition(String(__secondsToTicks(${atSeconds})));
-    var qeSeq = __qe();
-    var base = "${esc(toHostPath(target))}".replace(/\\.png$/i, "");
-    qeSeq.exportFramePNG(String(qeSeq.CTI.timecode), base);
-    var written = new File(base + ".png");
-    if (!written.exists) return __error("Premiere wrote no still at ${atSeconds}s");
-    return __result({ path: written.fsName });
-  `,
-    { timeoutMs: 90_000 },
-  );
-  return target;
-}
 
 function analyseFile(path: string) {
   const image = decodePng(readFileSync(path));
@@ -70,14 +48,6 @@ function clipRect(
 
   if (width < 8 || height < 8) return null;
   return { x, y, width, height };
-}
-
-function discard(path: string): void {
-  try {
-    rmSync(path, { force: true });
-  } catch {
-    return;
-  }
 }
 
 export const analysisTools = defineTools([

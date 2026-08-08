@@ -2,6 +2,7 @@ import { z } from "zod";
 import { evaluate } from "../bridge/client.js";
 import { esc } from "../bridge/script.js";
 import { PRESET_SUBFOLDERS } from "../premiere/constants.js";
+import { EXPORT_RANGES, scopeGuard, type ExportRange } from "../premiere/encoder.js";
 import { toHostPath } from "../premiere/paths.js";
 import { defineTools } from "./types.js";
 
@@ -98,10 +99,7 @@ export const exportTools = defineTools([
     schema: {
       output_path: z.string().describe("Absolute output path, e.g. C:/Users/me/Videos/cut.mp4"),
       preset_path: z.string().describe("Absolute path to an .epr preset, from list_export_presets"),
-      range: z
-        .enum(["entire", "in_to_out", "work_area"])
-        .default("entire")
-        .describe("Which part of the sequence to render"),
+      range: z.enum(EXPORT_RANGES).default("entire").describe("Which part of the sequence to render"),
       timeout_ms: z.number().int().positive().default(600_000).describe("Default 10 minutes"),
     },
     handler: async ({
@@ -112,7 +110,7 @@ export const exportTools = defineTools([
     }: {
       output_path: string;
       preset_path: string;
-      range?: "entire" | "in_to_out" | "work_area";
+      range?: ExportRange;
       timeout_ms?: number;
     }) =>
       evaluate(
@@ -122,16 +120,7 @@ export const exportTools = defineTools([
         var preset = new File("${esc(toHostPath(preset_path))}");
         if (!preset.exists) return __error("Preset not found: ${esc(toHostPath(preset_path))}");
 
-        var scope = ${
-          range === "in_to_out"
-            ? "app.encoder.ENCODE_IN_TO_OUT"
-            : range === "work_area"
-              ? "app.encoder.ENCODE_WORKAREA"
-              : "app.encoder.ENCODE_ENTIRE"
-        };
-        if (typeof scope !== "number") {
-          return __error("This Premiere build does not expose the ${range} export scope");
-        }
+        ${scopeGuard(range)}
 
         var reported = seq.exportAsMediaDirect(
           "${esc(toHostPath(output_path))}",

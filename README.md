@@ -81,7 +81,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-51 tools.
+52 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -92,9 +92,8 @@ Then ask the assistant to call `ping`.
 | `set_active_sequence` | `sequence` | Make a sequence the active one, so every other tool operates on it. |
 | `create_sequence_from_items` | `name`, `item_ids` | Create a new sequence built from one or more project items, and confirm it exists. |
 | `check_edit` | `max_scale`, `max_audio_db` | Inspect the whole sequence and report the problems that quietly ruin an edit: clips scaled above 100 percent, stabilisers that were never analysed, audio above unity or with keyframes that spike, disabled clips, gaps on the main video track, muted tracks, and clips missing a grade while their neighbours have one. |
+| `review_sequence` | `output_dir`, `frames`, `start_seconds`, `end_seconds` | One pass over a whole sequence for judging it rather than editing it: writes evenly spaced stills across the running time, measures each one, and reports the sequence settings alongside them. |
 | `contact_sheet` | `output_dir`, `track_index`, `limit` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
-| `match_grade` | `source_node_id`, `target_node_ids` | Copy one clip's Lumetri Basic Correction onto other clips as a starting point, then read every value back. |
-| `get_grade` | — | Read the Lumetri Basic Correction values of every graded clip in one call, so a grade can be compared across shots without inspecting clips one at a time. |
 | `analyse_frame` | `time_seconds` | Measure the image at a point in the sequence and suggest Basic Correction moves. |
 | `analyse_clips` | `track_index`, `limit` | Measure one frame per clip on a video track and report the numbers side by side, so shots can be grouped by how they actually look rather than by eye. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
@@ -121,6 +120,8 @@ Then ask the assistant to call `ping`.
 | `set_scale` | `node_id`, `scale` | Set a clip's Motion scale and read it back to confirm. |
 | `grade_clips` | `node_ids`, `add_lumetri_if_missing`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Apply the same Lumetri Basic Correction to a group of clips in one pass, then read every value back. |
 | `set_lumetri` | `node_id`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Set Lumetri Basic Correction values on a clip and read them back. |
+| `match_grade` | `source_node_id`, `target_node_ids` | Copy one clip's Lumetri Basic Correction onto other clips as a starting point, then read every value back. |
+| `get_grade` | — | Read the Lumetri Basic Correction values of every graded clip in one call, so a grade can be compared across shots without inspecting clips one at a time. |
 | `set_audio_level` | `node_id`, `db` | Set a clip's audio level in decibels and read it back. |
 | `normalise_loudness` | `target`, `track_index`, `range`, `allow_clipping`, `timeout_ms` | Measure the sequence loudness and then actually move the audio to hit the target, in one pass. |
 | `analyse_loudness` | `target`, `range`, `timeout_ms` | Measure how loud the sequence actually is, in LUFS to ITU-R BS.1770, by rendering its audio to a temporary WAV and analysing it here. |

@@ -35,6 +35,7 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   normalise_loudness: { target: "social", track_index: 0, range: "entire" },
   get_timeline: { detail: "full", track_type: "both", empty_tracks: true },
   check_media: { limit: 200 },
+  review_sequence: { output_dir: "C:/tmp/review", frames: 4 },
   attach_proxy: { item_id: "000f4242", proxy_path: "C:/tmp/proxy.mp4" },
   relink_media: { item_id: "000f4242", new_path: "C:/tmp/moved.mp4" },
   run_script: { code: "return __result({ ok: 1 });" },
