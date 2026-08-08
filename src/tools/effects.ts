@@ -55,7 +55,17 @@ export const effectTools = defineTools([
         } catch (lookupError) {
           fx = null;
         }
-        if (!fx) return __error("No such effect: ${esc(effect_name)}. Use list_effects for exact names.");
+        var fxName = "";
+        if (fx) {
+          try { fxName = String(fx.name); } catch (fxNameError) { fxName = ""; }
+        }
+        if (!fx || fxName.length === 0) {
+          return __error(
+            "No such effect: ${esc(effect_name)}. Premiere returns a nameless placeholder for an " +
+            "unknown effect rather than nothing, so the name has to match exactly. " +
+            "Use list_effects for exact names."
+          );
+        }
 
         var before = clip.components.numItems;
         if (isVideo) { qeClip.addVideoEffect(fx); } else { qeClip.addAudioEffect(fx); }
