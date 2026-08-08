@@ -149,6 +149,28 @@ if (longestClip.end - longestClip.start > 0.5) {
   });
 }
 
+const items = JSON.parse((await call("list_project_items", { limit: 100 })).text);
+const media = items.items.find((entry) => entry.kind === "media" && /\.(mp4|mov|mxf)$/i.test(entry.name));
+if (media && sequence.videoTracks.length > 1) {
+  const parkAt = Math.round(sequence.durationSeconds + 2);
+  const placed = await check("add_to_timeline", "add_to_timeline", {
+    item_id: media.nodeId,
+    track_type: "video",
+    track_index: 1,
+    time_seconds: parkAt,
+    mode: "overwrite",
+  });
+  if (placed.ok) {
+    const node = JSON.parse(placed.text).placed?.nodeId;
+    if (node) {
+      await check("trim_clip", "trim_clip", { node_id: node, edge: "end", time_seconds: parkAt + 3 });
+      await check("move_clip", "move_clip", { node_id: node, time_seconds: parkAt + 1 });
+      await check("set_clip_speed", "set_clip_speed", { node_id: node, speed_percent: 200 });
+      await check("remove_clip cleanup", "remove_clip", { node_id: node, ripple: false });
+    }
+  }
+}
+
 const splitAt = Math.round((longestClip.start + (longestClip.end - longestClip.start) / 2) * 100) / 100;
 const split = await check("split_clip", "split_clip", { track_type: "video", track_index: 0, time_seconds: splitAt });
 if (split.ok) {

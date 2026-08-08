@@ -75,6 +75,10 @@ Then ask the assistant to call `ping`.
 | Tool | What it does |
 | --- | --- |
 | `set_playhead` | Move the playhead, bounds checked |
+| `add_to_timeline` | Place a project item on a track, insert or overwrite |
+| `move_clip` | Move a clip to a new start time |
+| `trim_clip` | Move a clip's head or tail |
+| `set_clip_speed` | Change playback speed, confirms the new duration |
 | `split_clip` | Razor a track at a time, verified by clip count |
 | `remove_clip` | Ripple or lift a clip off the timeline |
 | `set_clip_enabled` | Disable a shot without deleting it |
@@ -128,11 +132,16 @@ These cost real debugging time and are encoded in the tools:
 ## Development
 
 ```bash
-npm run dev     # tsc --watch
-npm test        # vitest
-npm run check   # typecheck + tests, no build
-npm run build   # emit dist/
+npm run dev      # tsc --watch
+npm test         # vitest
+npm run check    # typecheck + tests, no build
+npm run build    # emit dist/
+npm run verify   # run every tool against the open project
 ```
+
+`npm run verify` covers the read-only tools. Add `-- --destructive` to also exercise
+splitting, removing, importing and speed changes; that edits the open project, so
+point it at a scratch one.
 
 ### Testing against a live Premiere without restarting your assistant
 

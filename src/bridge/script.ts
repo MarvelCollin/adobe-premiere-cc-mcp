@@ -36,6 +36,46 @@ function __findClip(nodeId) {
   return null;
 }
 
+function __sequenceFps() {
+  var seq = __seq();
+  if (!seq) return 25;
+  return Math.round(TICKS_PER_SECOND / Number(seq.timebase));
+}
+
+function __pad(value, width) {
+  var text = String(Math.floor(Math.abs(value)));
+  while (text.length < width) text = "0" + text;
+  return text;
+}
+
+function __timecode(seconds, fps) {
+  if (!fps) fps = __sequenceFps();
+  var totalFrames = Math.round(Math.abs(seconds) * fps);
+  var frames = totalFrames % fps;
+  var totalSeconds = (totalFrames - frames) / fps;
+  var secs = totalSeconds % 60;
+  var totalMinutes = (totalSeconds - secs) / 60;
+  var mins = totalMinutes % 60;
+  var hours = (totalMinutes - mins) / 60;
+  return __pad(hours, 2) + ":" + __pad(mins, 2) + ":" + __pad(secs, 2) + ":" + __pad(frames, 2);
+}
+
+function __findProjectItem(idOrName) {
+  var wanted = String(idOrName);
+  function search(item) {
+    for (var i = 0; i < item.children.numItems; i++) {
+      var child = item.children[i];
+      if (String(child.nodeId) === wanted || String(child.name) === wanted) return child;
+      if (child.type === ProjectItemType.BIN) {
+        var deeper = search(child);
+        if (deeper) return deeper;
+      }
+    }
+    return null;
+  }
+  return app.project ? search(app.project.rootItem) : null;
+}
+
 function __qeClipAt(qeTrack, startSeconds) {
   for (var i = 0; i < qeTrack.numItems; i++) {
     var item = qeTrack.getItemAt(i);
