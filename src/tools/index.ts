@@ -1,3 +1,4 @@
+import { analysisTools } from "./analysis.js";
 import { assemblyTools } from "./assembly.js";
 import { audioTools } from "./audio.js";
 import { colorTools } from "./color.js";
@@ -25,6 +26,7 @@ export const allTools: ToolDefinition[] = [
   ...timelineTools,
   ...sequenceTools,
   ...reviewTools,
+  ...analysisTools,
   ...playheadTools,
   ...rangeTools,
   ...trackTools,

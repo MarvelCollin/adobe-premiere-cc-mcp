@@ -74,7 +74,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-44 tools.
+46 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -88,6 +88,8 @@ Then ask the assistant to call `ping`.
 | `contact_sheet` | `output_dir`, `track_index`, `limit` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
 | `match_grade` | `source_node_id`, `target_node_ids` | Copy one clip's Lumetri Basic Correction onto other clips as a starting point, then read every value back. |
 | `get_grade` | — | Read the Lumetri Basic Correction values of every graded clip in one call, so a grade can be compared across shots without inspecting clips one at a time. |
+| `analyse_frame` | `time_seconds` | Measure the image at a point in the sequence and suggest Basic Correction moves. |
+| `analyse_clips` | `track_index`, `limit` | Measure one frame per clip on a video track and report the numbers side by side, so shots can be grouped by how they actually look rather than by eye. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
 | `set_playhead` | `time_seconds` | Move the playhead to a time in seconds and read the position back. |
 | `get_sequence_range` | — | Read the sequence in and out points and the work area, the two ranges that decide what a partial export covers. |
