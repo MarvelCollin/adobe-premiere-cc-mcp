@@ -74,7 +74,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-41 tools.
+44 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -86,9 +86,12 @@ Then ask the assistant to call `ping`.
 | `create_sequence_from_items` | `name`, `item_ids` | Create a new sequence built from one or more project items, and confirm it exists. |
 | `check_edit` | `max_scale`, `max_audio_db` | Inspect the whole sequence and report the problems that quietly ruin an edit: clips scaled above 100 percent, stabilisers that were never analysed, audio above unity or with keyframes that spike, disabled clips, gaps on the main video track, muted tracks, and clips missing a grade while their neighbours have one. |
 | `contact_sheet` | `output_dir`, `track_index`, `limit` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
+| `match_grade` | `source_node_id`, `target_node_ids` | Copy one clip's Lumetri Basic Correction onto other clips as a starting point, then read every value back. |
 | `get_grade` | — | Read the Lumetri Basic Correction values of every graded clip in one call, so a grade can be compared across shots without inspecting clips one at a time. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
 | `set_playhead` | `time_seconds` | Move the playhead to a time in seconds and read the position back. |
+| `get_sequence_range` | — | Read the sequence in and out points and the work area, the two ranges that decide what a partial export covers. |
+| `set_sequence_range` | `in_seconds`, `out_seconds` | Set the sequence in and out points, then read them back. |
 | `set_track_state` | `track_type`, `track_index`, `muted` | Mute or unmute a video or audio track and read the state back. |
 | `list_markers` | — | List every marker on the active sequence with its time, name and comment. |
 | `add_marker` | `time_seconds`, `name`, `comment`, `duration_seconds` | Add a marker to the active sequence at a given time, then confirm it exists. |

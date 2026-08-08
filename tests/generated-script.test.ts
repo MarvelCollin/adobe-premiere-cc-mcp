@@ -51,6 +51,8 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   contact_sheet: { output_dir: "C:/tmp/sheet", track_index: 0, limit: 5 },
   grade_clips: { node_ids: ["000f4241", "000f4243"], contrast: 12, saturation: 110 },
   check_edit: { max_scale: 100, max_audio_db: 0 },
+  set_sequence_range: { in_seconds: 1, out_seconds: 5 },
+  match_grade: { source_node_id: "000f4241", target_node_ids: ["000f4243"] },
 };
 
 describe("generated ExtendScript", () => {

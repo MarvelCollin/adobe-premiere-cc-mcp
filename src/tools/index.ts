@@ -10,6 +10,7 @@ import { markerTools } from "./markers.js";
 import { mediaTools } from "./media.js";
 import { playheadTools } from "./playhead.js";
 import { projectTools } from "./project.js";
+import { rangeTools } from "./range.js";
 import { reviewTools } from "./review.js";
 import { sequenceTools } from "./sequence.js";
 import { stabilizerTools } from "./stabilizer.js";
@@ -25,6 +26,7 @@ export const allTools: ToolDefinition[] = [
   ...sequenceTools,
   ...reviewTools,
   ...playheadTools,
+  ...rangeTools,
   ...trackTools,
   ...markerTools,
   ...mediaTools,
