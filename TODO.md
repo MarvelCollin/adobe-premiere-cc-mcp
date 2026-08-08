@@ -20,10 +20,10 @@ Where this project is going, in rough priority order.
 - [x] Checked-in verification script, one command, read-only by default.
 - [x] Scratch sequence creation so destructive checks do not need the real edit.
 
-## Phase 2 — own the whole stack
+## Phase 2 — own the whole stack — done
 
-The CEP panel is borrowed. Replacing it is the difference between "our server" and
-"our tool". This is now the largest remaining gap.
+The panel was the one borrowed piece. It is ours now, written from the protocol and
+signed with our own certificate.
 
 - [x] Write our own CEP panel: polls the temp folder, `evalScript`, writes the
       response, heartbeats while busy, with a status UI and its own bridge folder
@@ -69,8 +69,9 @@ The CEP panel is borrowed. Replacing it is the difference between "our server" a
 - [x] Script-generation tests so a refactor cannot silently change what runs inside
       Premiere, plus a guard that every tool is covered.
 - [x] Tool reference generated from the registry into the README.
-- [ ] Publish to npm. Not before Phase 2: the install story is incomplete while the
-      panel comes from somewhere else.
+- [ ] Publish to npm. Now unblocked: `npm run sign-panel` and `npm run install-panel`
+      make the install story complete on Windows. Needs a decision on shipping the
+      signed `.zxp` in the package or having users sign their own.
 - [ ] Decide public vs private for the repo. Currently public.
 
 ---
