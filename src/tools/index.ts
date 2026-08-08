@@ -20,6 +20,7 @@ import { projectTools } from "./project.js";
 import { rangeTools } from "./range.js";
 import { reviewTools } from "./review.js";
 import { scopeTools } from "./scopes.js";
+import { splitEditTools } from "./splitedit.js";
 import { sequenceTools } from "./sequence.js";
 import { stabilizerTools } from "./stabilizer.js";
 import { timelineTools } from "./timeline.js";
@@ -42,6 +43,7 @@ export const allTools: ToolDefinition[] = [
   ...trackTools,
   ...markerTools,
   ...beatTools,
+  ...splitEditTools,
   ...mediaTools,
   ...linkTools,
   ...editTools,
