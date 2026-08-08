@@ -17,7 +17,8 @@
     "test": "vitest run",
     "check": "tsc --noEmit && vitest run",
     "smoke": "node scripts/smoke.mjs",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "docs": "node scripts/docs.mjs"
   },
   "keywords": [
     "mcp",

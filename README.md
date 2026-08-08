@@ -57,55 +57,48 @@ Then ask the assistant to call `ping`.
 
 ## Tools
 
-**Inspect**
+<!-- tools:start -->
 
-| Tool | What it does |
-| --- | --- |
-| `ping` | Confirm Premiere and the bridge are alive |
-| `get_timeline` | Every track and clip with node IDs, timing, effects, scale |
-| `get_clip` | One clip in full, including every effect property |
-| `get_playhead` | Playhead position in seconds and timecode |
-| `list_project_items` | Bins and media in the project panel |
-| `list_effects` / `list_transitions` | Exact names to pass to the apply tools |
-| `list_export_presets` | Presets on disk, including Premiere's own |
-| `get_stabilizer_status` | Which clips are actually solved, not just configured |
+34 tools.
 
-**Edit**
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `ping` | — | Check that Premiere is running and the bridge panel is alive. |
+| `get_timeline` | — | Full picture of the active sequence: resolution, frame rate, duration, and every clip on every track with its node ID, timing, effects and Motion scale. |
+| `get_clip` | `node_id` | Everything about one clip: timing, in-point, and every effect with all of its property values and keyframe state. |
+| `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
+| `set_playhead` | `time_seconds` | Move the playhead to a time in seconds and read the position back. |
+| `set_track_state` | `track_type`, `track_index`, `muted` | Mute or unmute a video or audio track and read the state back. |
+| `list_markers` | — | List every marker on the active sequence with its time, name and comment. |
+| `add_marker` | `time_seconds`, `name`, `comment`, `duration_seconds` | Add a marker to the active sequence at a given time, then confirm it exists. |
+| `delete_marker` | `time_seconds`, `tolerance_seconds` | Delete the marker nearest a given time, within a small tolerance, and report how many remain. |
+| `list_project_items` | `limit` | List the project panel contents: bins and media, with the node ID of each. |
+| `import_media` | `file_paths`, `bin_name` | Import one or more media files into the project panel and confirm the item count grew. |
+| `create_bin` | `name` | Create a bin in the project panel and confirm it exists. |
+| `set_clip_enabled` | `node_id`, `enabled` | Enable or disable a clip. |
+| `split_clip` | `track_type`, `track_index`, `time_seconds` | Cut every clip on a track at the given time, the same as the razor tool. |
+| `remove_clip` | `node_id`, `ripple` | Remove a clip from the timeline. |
+| `add_to_timeline` | `item_id`, `track_type`, `track_index`, `time_seconds`, `mode` | Place a project item onto a track at a given time and confirm the clip count grew. |
+| `move_clip` | `node_id`, `time_seconds` | Move a clip to a new start time on its own track and confirm it landed. |
+| `set_clip_speed` | `node_id`, `speed_percent` | Change a clip's playback speed. |
+| `trim_clip` | `node_id`, `edge`, `time_seconds` | Trim a clip's start or end on the timeline and confirm the new duration. |
+| `set_scale` | `node_id`, `scale` | Set a clip's Motion scale and read it back to confirm. |
+| `set_lumetri` | `node_id`, `exposure`, `contrast`, `highlights`, `shadows`, `whites`, `blacks`, `saturation`, `temperature`, `tint`, `look_intensity` | Set Lumetri Basic Correction values on a clip and read them back. |
+| `set_audio_level` | `node_id`, `db` | Set a clip's audio level in decibels and read it back. |
+| `set_fade` | `node_id`, `fade_in_seconds`, `fade_out_seconds` | Put a clean fade in and/or out on a clip: Opacity for video, Volume for audio. |
+| `list_effects` | `kind`, `filter` | List every video or audio effect name Premiere can apply. |
+| `apply_effect` | `node_id`, `effect_name` | Add a video or audio effect to a clip by name and confirm it attached. |
+| `list_transitions` | `filter` | List every video transition name Premiere can apply, for use with add_transition. |
+| `add_transition` | `node_id`, `transition_name`, `at` | Add a video transition at a clip's head or tail and confirm it appeared on the track. |
+| `get_stabilizer_status` | — | Report Warp Stabilizer state for every clip that has it. |
+| `set_stabilizer_mode` | `node_id`, `mode`, `max_scale` | Set Warp Stabilizer to 'no_motion' (locked static frame, what static-camera edits need) or 'smooth_motion' (keeps camera movement, smoothed). |
+| `export_frame` | `output_path`, `time_seconds` | Write a full resolution still of the sequence at a given time. |
+| `list_export_presets` | `filter`, `limit` | List Adobe .epr export presets on disk, including the ones Premiere ships itself. |
+| `export_sequence` | `output_path`, `preset_path`, `timeout_ms` | Render the active sequence to a file using Premiere's own encoder; Adobe Media Encoder is not required. |
+| `save_project` | — | Save the current project. |
+| `run_script` | `code`, `timeout_ms` | Escape hatch: run raw ExtendScript in Premiere for anything the typed tools do not cover. |
 
-| Tool | What it does |
-| --- | --- |
-| `set_playhead` | Move the playhead, bounds checked |
-| `add_to_timeline` | Place a project item on a track, insert or overwrite |
-| `move_clip` | Move a clip to a new start time |
-| `trim_clip` | Move a clip's head or tail |
-| `set_clip_speed` | Change playback speed, confirms the new duration |
-| `split_clip` | Razor a track at a time, verified by clip count |
-| `remove_clip` | Ripple or lift a clip off the timeline |
-| `set_clip_enabled` | Disable a shot without deleting it |
-| `set_track_state` | Mute or hide a track |
-| `add_marker` / `list_markers` / `delete_marker` | Sequence markers |
-| `import_media` / `create_bin` | Bring footage in, optionally into a bin |
-
-**Look and sound**
-
-| Tool | What it does |
-| --- | --- |
-| `set_scale` | Set Motion scale, verified |
-| `set_lumetri` | Basic Correction values, verified |
-| `apply_effect` | Attach an effect by name, verified |
-| `add_transition` | Transition at a clip edge, verified on the track |
-| `set_stabilizer_mode` | No Motion vs Smooth Motion, reports if analysis is still needed |
-| `set_audio_level` | Set level in dB, clears conflicting keyframes first |
-| `set_fade` | Clean fade in/out on Opacity or Volume |
-
-**Deliver**
-
-| Tool | What it does |
-| --- | --- |
-| `export_frame` | Full resolution still, so you can look at the result |
-| `export_sequence` | Render with Premiere's encoder, output verified on disk |
-| `save_project` | Save; nothing auto-saves |
-| `run_script` | Raw ExtendScript escape hatch |
+<!-- tools:end -->
 
 ## Premiere behaviours worth knowing
 
