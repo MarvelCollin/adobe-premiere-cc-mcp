@@ -116,7 +116,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-56 tools.
+58 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -132,6 +132,8 @@ Then ask the assistant to call `ping`.
 | `contact_sheet` | `output_dir`, `track_index`, `limit`, `isolate` | Export one still per clip on a video track, taken from the middle of each clip, and return the file paths. |
 | `analyse_frame` | `time_seconds` | Measure the image at a point in the sequence and suggest Basic Correction moves. |
 | `analyse_clips` | `track_index`, `limit` | Measure one frame per clip on a video track and report the numbers side by side, so shots can be grouped by how they actually look rather than by eye. |
+| `read_scopes` | `time_seconds` | Read the video scopes at a point in the sequence, the way a colourist would. |
+| `match_shots` | `reference_node_id`, `target_node_ids`, `apply`, `max_passes` | Match one clip's grade to another by measurement rather than by eye. |
 | `get_playhead` | — | Current playhead position in the active sequence, in seconds and as timecode. |
 | `set_playhead` | `time_seconds` | Move the playhead to a time in seconds and read the position back. |
 | `get_sequence_range` | — | Read the sequence in and out points and the work area, the two ranges that decide what a partial export covers. |

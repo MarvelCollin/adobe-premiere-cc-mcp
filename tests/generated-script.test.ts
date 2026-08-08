@@ -61,6 +61,8 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   check_edit: { max_scale: 100, max_audio_db: 0 },
   set_sequence_range: { in_seconds: 1, out_seconds: 5 },
   analyse_frame: { time_seconds: 3 },
+  read_scopes: { time_seconds: 3 },
+  match_shots: { reference_node_id: "000f4241", target_node_ids: ["000f4243"], apply: false },
   detect_beats: { range: "entire", timeout_ms: 60000 },
   mark_beats: { grid: "downbeats", offset_seconds: 0, limit: 20, range: "entire", timeout_ms: 60000 },
   cut_to_beats: { track_index: 0, grid: "downbeats", offset_seconds: 0, limit: 10, range: "entire", timeout_ms: 60000 },
