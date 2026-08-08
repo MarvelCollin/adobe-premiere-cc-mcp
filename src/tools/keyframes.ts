@@ -37,8 +37,28 @@ export const keyframeTools = defineTools([
         var prop = isAudio ? __property(comp, "Level") : __property(comp, "Opacity");
         if (!prop) return __error("Could not find the property to fade");
 
-        var full = isAudio ? prop.getValue() : 100;
-        if (isAudio && !(full > 0)) full = 1;
+        var full = 100;
+        if (isAudio) {
+          full = prop.getValue();
+          if (!(full > 0)) {
+            var priorKeys = null;
+            try { priorKeys = prop.getKeys(); } catch (keyReadError) { priorKeys = null; }
+            var peak = 0;
+            if (priorKeys) {
+              for (var pk = 0; pk < priorKeys.length; pk++) {
+                var priorValue = prop.getValueAtKey(priorKeys[pk]);
+                if (priorValue > peak) peak = priorValue;
+              }
+            }
+            full = peak;
+          }
+          if (!(full > 0)) {
+            return __error(
+              "This clip's volume reads as silence, so there is no level to fade up to. Fading to a guessed unity gain " +
+              "would make it jump louder than the rest of the mix; set a level with set_audio_level first."
+            );
+          }
+        }
 
         var clearedKeys = __clearKeys(prop);
         prop.setValue(full, true);
@@ -67,6 +87,7 @@ export const keyframeTools = defineTools([
           nodeId: String(clip.nodeId),
           name: String(clip.name),
           property: isAudio ? "Volume" : "Opacity",
+          fadesToDb: isAudio ? Math.round((20 * (Math.log(full) / Math.LN10)) * 100) / 100 : null,
           clearedKeys: clearedKeys,
           keyCount: keys ? keys.length : 0,
           valueAtStart: prop.getValueAtTime(base),

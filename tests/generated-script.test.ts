@@ -64,6 +64,16 @@ const SAMPLE_ARGS: Record<string, Record<string, unknown>> = {
   read_scopes: { time_seconds: 3 },
   check_delivery: { samples: 8 },
   check_audio: { range: "entire", timeout_ms: 60000 },
+  duck_music: {
+    music_track_index: 1,
+    dialogue_track_indexes: [0],
+    duck_db: -12,
+    attack_seconds: 0.25,
+    hold_seconds: 0.3,
+    release_seconds: 0.6,
+    dry_run: true,
+    timeout_ms: 60000,
+  },
   find_action_peaks: { node_id: "000f4241", samples: 6 },
   make_split_edit: { cut_seconds: 5, type: "l", overlap_seconds: 0.5, video_track: 0, audio_track: 0 },
   match_shots: { reference_node_id: "000f4241", target_node_ids: ["000f4243"], apply: false },
@@ -117,6 +127,14 @@ describe("generated ExtendScript", () => {
     const tool = allTools.find((entry) => entry.name === "create_bin");
     await tool!.handler({ name: 'Bin "One"' });
     expect(sent[0]).toContain('Bin \\"One\\"');
+  });
+
+  it("never fades an audio clip up to a guessed unity gain", async () => {
+    const tool = allTools.find((entry) => entry.name === "set_fade");
+    await tool!.handler(SAMPLE_ARGS.set_fade);
+    expect(sent[0]).not.toMatch(/full\s*=\s*1\s*;/);
+    expect(sent[0]).toContain("getValueAtKey");
+    expect(sent[0]).toMatch(/reads as silence/);
   });
 
   it("normalises Windows paths for the host", async () => {
