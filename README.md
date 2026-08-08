@@ -111,7 +111,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-53 tools.
+56 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -135,6 +135,9 @@ Then ask the assistant to call `ping`.
 | `list_markers` | — | List every marker on the active sequence with its time, name and comment. |
 | `add_marker` | `time_seconds`, `name`, `comment`, `duration_seconds` | Add a marker to the active sequence at a given time, then confirm it exists. |
 | `delete_marker` | `time_seconds`, `tolerance_seconds` | Delete the marker nearest a given time, within a small tolerance, and report how many remain. |
+| `detect_beats` | `range`, `timeout_ms` | Find the tempo of the sequence audio and return the beat grid, without changing anything. |
+| `mark_beats` | `grid`, `offset_seconds`, `limit`, `range`, `timeout_ms` | Write sequence markers on the beat grid so the cuts can be placed by eye or by tool. |
+| `cut_to_beats` | `track_index`, `grid`, `offset_seconds`, `limit`, `range`, `timeout_ms` | Razor a video track on the beat grid, so every cut lands on the music. |
 | `list_project_items` | `limit` | List the project panel contents: bins and media, with the node ID of each. |
 | `import_media` | `file_paths`, `bin_name` | Import one or more media files into the project panel and confirm the item count grew. |
 | `create_bin` | `name` | Create a bin in the project panel and confirm it exists. |
