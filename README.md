@@ -81,7 +81,7 @@ Then ask the assistant to call `ping`.
 
 <!-- tools:start -->
 
-47 tools.
+50 tools.
 
 | Tool | Parameters | What it does |
 | --- | --- | --- |
@@ -108,6 +108,9 @@ Then ask the assistant to call `ping`.
 | `list_project_items` | `limit` | List the project panel contents: bins and media, with the node ID of each. |
 | `import_media` | `file_paths`, `bin_name` | Import one or more media files into the project panel and confirm the item count grew. |
 | `create_bin` | `name` | Create a bin in the project panel and confirm it exists. |
+| `check_media` | `limit` | Report the link state of every media item: whether it is offline, where its media actually lives on disk, and whether a proxy is attached. |
+| `attach_proxy` | `item_id`, `proxy_path` | Attach a proxy file to a project item, so Premiere edits against the light version while keeping the original for export. |
+| `relink_media` | `item_id`, `new_path` | Point an offline project item at its file in a new location and confirm it came back online. |
 | `set_clip_enabled` | `node_id`, `enabled` | Enable or disable a clip. |
 | `split_clip` | `track_type`, `track_index`, `time_seconds` | Cut every clip on a track at the given time, the same as the razor tool. |
 | `remove_clip` | `node_id`, `ripple` | Remove a clip from the timeline. |

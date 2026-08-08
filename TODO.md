@@ -54,11 +54,15 @@ signed with our own certificate.
       capability. Revisit only if a workflow actually needs the UI selection.
 - [x] Sequence in and out points, for partial exports. Work area is readable;
       Premiere exposes no setter worth trusting, so in/out is the supported route.
-- [ ] Proxy attach and detach, offline media handling. Not blocked: probing a project
-      item on 26.2 shows `canProxy`, `hasProxy`, `attachProxy`, `getProxyPath`,
-      `getMediaPath`, `changeMediaPath`, `isOffline` and `setOffline` all present and
-      working, and `canProxy()` returned true for our footage. Only `unlinkMedia` and
-      `relinkMedia` are absent, so relinking goes through `changeMediaPath`.
+- [x] Proxy and offline media handling: `check_media`, `attach_proxy`, `relink_media`.
+      All three verified live. `check_media` reports the link state of every item and
+      says `clean` when nothing is offline; `attach_proxy` confirms with `hasProxy()`
+      rather than trusting the call; `relink_media` goes through `changeMediaPath`,
+      since `unlinkMedia` and `relinkMedia` do not exist on this build, and errors if
+      the item is still offline afterwards.
+- [ ] Proxy **detach**, and generating proxies. Premiere has no scripted detach that we
+      found, and it does not generate proxies from a script at all, so the file must
+      already exist. Both are Media Encoder or UI work.
 - [ ] ~~Audio track mixer levels, as opposed to per clip levels.~~ **Blocked, with
       evidence.** The classic audio track exposes only clips, id, mediaType, name and
       transitions, and the QE audio track exposes only `setMute` and `isMuted`; there is
