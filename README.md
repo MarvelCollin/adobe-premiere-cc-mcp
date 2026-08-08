@@ -9,10 +9,15 @@ An MCP server for driving Adobe Premiere Pro from an AI assistant. Inspect a pro
 and arrange a timeline, grade by measurement rather than by eye, mix and normalise audio
 to a real loudness target, and export frames or finished video.
 
-The design goal is narrow: **a small set of tools that verify their own work.**
-Every write reads the value back, and the ones that cannot be verified say so
-rather than reporting a cheerful success. That matters because several Premiere
-scripting calls return "No Error" while doing nothing at all.
+The design rule is **one tool per expert capability, not one per API call.**
+`analyse_clips` renders each shot and measures it; it does not expose `getClipScale`
+and leave the thinking to you. The expertise lives inside the tool, which is why the
+surface stays small while the capability grows.
+
+The second rule is that **every write verifies itself.** A tool reads the value back,
+and the ones that cannot be checked say so rather than reporting a cheerful success.
+That matters because several Premiere scripting calls return "No Error" while doing
+nothing at all.
 
 Built and verified against **Premiere Pro 26.2** on Windows. Every tool listed
 below has been run against a real project, not just typechecked, including the
@@ -33,11 +38,11 @@ destructive ones.
   whether the message survives muted playback.
 - **Nothing borrowed.** The CEP panel that carries commands into Premiere was written
   from the protocol for this project and is signed with its own certificate.
-- **Small on purpose.** Other Premiere MCP servers ship several hundred to over a
-  thousand tools. Every tool's name, description and schema is sent to the model on
-  every request, so a large surface is paid for on each turn before any work happens.
-  These 53 tools cost roughly 4,200 tokens of that budget. The aim is one obvious tool
-  per job, each proven against Premiere, rather than one per scripting call.
+- **Capabilities, not wrappers.** Other Premiere MCP servers ship several hundred to
+  over a thousand tools, most of them one scripting call each, which leaves every expert
+  decision to the model. Every tool's name, description and schema is also sent on every
+  request, so a large surface is paid for before any work happens. These tools cost
+  roughly 4,400 tokens of that budget and each one does a whole job.
 
 ## Documentation
 
