@@ -1,10 +1,10 @@
 {
-  "name": "adobe-premier-cc-mcp",
+  "name": "adobe-premiere-cc-mcp",
   "version": "0.1.0",
   "description": "MCP server for driving Adobe Premiere Pro, with tools that verify their own writes",
   "type": "module",
   "bin": {
-    "adobe-premier-cc-mcp": "dist/index.js"
+    "adobe-premiere-cc-mcp": "dist/index.js"
   },
   "main": "dist/index.js",
   "files": [

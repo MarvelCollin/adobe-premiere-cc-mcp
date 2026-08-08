@@ -1,4 +1,4 @@
-# adobe-premier-cc-mcp
+# adobe-premiere-cc-mcp
 
 An MCP server for driving Adobe Premiere Pro from an AI assistant.
 
@@ -41,7 +41,7 @@ Register it with your MCP client, for example:
   "mcpServers": {
     "premiere": {
       "command": "node",
-      "args": ["C:/BINUS/SELF/adobe-premier-cc-mcp/dist/index.js"]
+      "args": ["C:/BINUS/SELF/adobe-premiere-cc-mcp/dist/index.js"]
     }
   }
 }
