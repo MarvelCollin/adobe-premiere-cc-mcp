@@ -56,8 +56,16 @@ export const transitionTools = defineTools([
         try { transition = qe.project.getVideoTransitionByName("${esc(transition_name)}"); } catch (lookupError) {
           transition = null;
         }
-        if (!transition) {
-          return __error("No such transition: ${esc(transition_name)}. Use list_transitions for exact names.");
+        var resolvedName = "";
+        if (transition) {
+          try { resolvedName = String(transition.name); } catch (nameError) { resolvedName = ""; }
+        }
+        if (!transition || resolvedName.length === 0) {
+          return __error(
+            "No such transition: ${esc(transition_name)}. Premiere hands back a nameless placeholder " +
+            "for an unknown transition rather than nothing, and applying it silently produces a " +
+            "Cross Dissolve. Use list_transitions for exact names."
+          );
         }
 
         if (typeof qeClip.addTransition !== "function") {
@@ -100,13 +108,27 @@ export const transitionTools = defineTools([
             "(unused media beyond the cut) at its ${at}."
           );
         }
+        var landed = resolvedName;
+        var finalTrack = __seq().videoTracks[found.trackIndex];
+        for (var n = 0; n < finalTrack.transitions.numItems; n++) {
+          var added = finalTrack.transitions[n];
+          if (added.start.seconds - 0.001 <= edgeSeconds && added.end.seconds + 0.001 >= edgeSeconds) {
+            landed = String(added.name);
+            break;
+          }
+        }
+
         return __result({
           nodeId: String(clip.nodeId),
           name: String(clip.name),
-          transition: "${esc(transition_name)}",
+          transition: landed,
+          requested: "${esc(transition_name)}",
           at: "${at}",
           transitionsBefore: before,
-          transitionsAfter: after
+          transitionsAfter: after,
+          warning: landed !== "${esc(transition_name)}"
+            ? "Premiere applied " + landed + " rather than the requested ${esc(transition_name)}."
+            : null
         });
       `,
         { timeoutMs: 60_000 },

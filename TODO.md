@@ -206,6 +206,12 @@ Premiere and looking at the timeline found it.
       response claimed otherwise. It now records where the following clip sat, compares
       afterwards, and returns `gapClosed` with a warning when a requested ripple did not
       happen.
+- [x] **`add_transition` accepted any transition name.** `getVideoTransitionByName`
+      returns a truthy placeholder with an empty name for input it does not recognise,
+      rather than nothing, so the existing null check never fired and applying the
+      placeholder silently produced a Cross Dissolve. Asking for a wipe and getting a
+      dissolve, reported as success. The lookup now requires a non empty name, and the
+      response reports the transition that actually landed alongside the one requested.
 - [x] Node version was claimed three different ways: `20.19+` in the README, `>=18` in
       `engines`, and only 20 tested in CI. Node 18 is end of life, so it is `>=20` now,
       stated once and tested on 20 and 22.
