@@ -5,4 +5,9 @@
       <Host Name="PPRO" Port="8090"/>
     </HostList>
   </Extension>
+  <Extension Id="com.marvelcollin.premiere.mcp.headless">
+    <HostList>
+      <Host Name="PPRO" Port="8091"/>
+    </HostList>
+  </Extension>
 </ExtensionList>

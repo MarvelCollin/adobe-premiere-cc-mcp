@@ -11,7 +11,7 @@
   var path = require("path");
   var os = require("os");
 
-  var bridgeDir = path.join(os.tmpdir(), "premiere-mcp-bridge");
+  var bridgeDir = path.join(os.tmpdir(), "premiere-mcp-link");
   var engineId = Math.random().toString(36).slice(2, 8);
   var running = false;
   var timer = null;
