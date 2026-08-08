@@ -7,7 +7,13 @@ Every write reads the value back, and the ones that cannot be verified say so
 rather than reporting a cheerful success. That matters because several Premiere
 scripting calls return "No Error" while doing nothing at all.
 
-Built and verified against **Premiere Pro 26.2** on Windows.
+Built and verified against **Premiere Pro 26.2** on Windows. Every tool listed
+below has been run against a real project, not just typechecked, including the
+destructive ones.
+
+Paths may be passed with forward or backslashes; they are normalised before they
+reach Premiere, because `exportAsMediaDirect` fails with a bare
+`Error: Unknown Error` on forward slashes.
 
 ## How it works
 

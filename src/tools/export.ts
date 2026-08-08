@@ -2,6 +2,7 @@ import { z } from "zod";
 import { evaluate } from "../bridge/client.js";
 import { esc } from "../bridge/script.js";
 import { PRESET_SUBFOLDERS } from "../premiere/constants.js";
+import { toHostPath } from "../premiere/paths.js";
 import { defineTools } from "./types.js";
 
 export const exportTools = defineTools([
@@ -23,7 +24,7 @@ export const exportTools = defineTools([
 
         // The real signature is (timecode, pathWithoutExtension) and Premiere
         // appends ".png" itself, so passing "shot.png" yields "shot.png.png".
-        var requested = "${esc(output_path)}";
+        var requested = "${esc(toHostPath(output_path))}";
         var base = requested.replace(/\\.png$/i, "");
         var reported = qeSeq.exportFramePNG(String(qeSeq.CTI.timecode), base);
 
@@ -116,22 +117,22 @@ export const exportTools = defineTools([
         `
         var seq = __seq();
         if (!seq) return __error("No active sequence");
-        var preset = new File("${esc(preset_path)}");
-        if (!preset.exists) return __error("Preset not found: ${esc(preset_path)}");
+        var preset = new File("${esc(toHostPath(preset_path))}");
+        if (!preset.exists) return __error("Preset not found: ${esc(toHostPath(preset_path))}");
 
         var reported = seq.exportAsMediaDirect(
-          "${esc(output_path)}",
-          "${esc(preset_path)}",
+          "${esc(toHostPath(output_path))}",
+          "${esc(toHostPath(preset_path))}",
           app.encoder.ENCODE_ENTIRE
         );
 
         // exportAsMediaDirect returns "No Error" even when nothing is written.
-        var written = new File("${esc(output_path)}");
+        var written = new File("${esc(toHostPath(output_path))}");
         if (!written.exists) {
-          return __error("Export reported '" + reported + "' but no file was written to ${esc(output_path)}");
+          return __error("Export reported '" + reported + "' but no file was written to ${esc(toHostPath(output_path))}");
         }
         return __result({
-          path: "${esc(output_path)}",
+          path: "${esc(toHostPath(output_path))}",
           bytes: written.length,
           hostResult: String(reported)
         });

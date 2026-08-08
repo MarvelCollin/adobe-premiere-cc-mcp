@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { evaluate } from "../bridge/client.js";
 import { esc } from "../bridge/script.js";
+import { toHostPath } from "../premiere/paths.js";
 import { defineTools } from "./types.js";
 
 /** Walks the project panel tree, which nests bins arbitrarily deep. */
@@ -57,7 +58,7 @@ export const mediaTools = defineTools([
         ${WALK_ITEMS}
         if (!app.project) return __error("No project open");
 
-        var paths = [${file_paths.map((path) => `"${esc(path)}"`).join(", ")}];
+        var paths = [${file_paths.map((path) => `"${esc(toHostPath(path))}"`).join(", ")}];
         for (var p = 0; p < paths.length; p++) {
           if (!new File(paths[p]).exists) return __error("File not found: " + paths[p]);
         }

@@ -88,7 +88,24 @@ async function main() {
     return 0;
   }
 
-  const calls = first ? [[first, second ? JSON.parse(second) : {}]] : DEFAULT_SWEEP;
+  let calls = DEFAULT_SWEEP;
+  if (first) {
+    let args = {};
+    if (second) {
+      try {
+        args = JSON.parse(second);
+      } catch (error) {
+        console.error(
+          `Could not parse the arguments as JSON: ${error.message}\n` +
+            `Got: ${second}\n` +
+            "Tip: wrap the JSON in single quotes and use forward slashes in paths, " +
+            'e.g. \'{"output_path":"C:/tmp/frame.png","time_seconds":12}\'',
+        );
+        return 1;
+      }
+    }
+    calls = [[first, args]];
+  }
 
   let failures = 0;
   for (const [name, args] of calls) {

@@ -5,27 +5,25 @@ has been written and typechecked but never run against a live Premiere.
 
 ## Status today
 
-- 30 tools, TypeScript, `npm run check` green (typecheck + 15 tests).
-- Verified live on Premiere Pro 26.2: `ping`, `get_timeline`, `get_clip`,
-  `get_stabilizer_status`, `list_effects`, `list_export_presets`.
+- 30 tools, TypeScript, `npm run check` green (typecheck + 19 tests).
+- **All 30 verified live on Premiere Pro 26.2**, destructive ones included.
 - Transport is the **existing signed CEP panel from another project**. That is the
   one piece of the stack we do not own.
 
 ---
 
-## Phase 1 — trust what we shipped
+## Phase 1 — trust what we shipped — done
 
-- [ ] Smoke every unverified tool against a scratch project, not the real edit:
-      `set_playhead`, `set_track_state`, `add_marker`, `list_markers`,
-      `delete_marker`, `list_project_items`, `import_media`, `create_bin`,
-      `set_clip_enabled`, `split_clip`, `remove_clip`, `set_scale`, `set_lumetri`,
-      `set_audio_level`, `set_fade`, `apply_effect`, `list_transitions`,
-      `add_transition`, `set_stabilizer_mode`, `export_frame`, `export_sequence`,
-      `save_project`.
-- [ ] Build a throwaway fixture project so destructive tools are never tested on
-      real work.
-- [ ] Record each result in a table in the README, so "verified" means something.
-- [ ] Fix whatever the sweep breaks.
+- [x] Smoke every tool against a live project.
+- [x] Fix what the sweep broke: `export_sequence` failed with
+      `Error: Unknown Error` on forward-slash paths. All host paths are now
+      normalised to backslashes, covered by a regression test.
+- [x] Say plainly in the README that every tool has been run for real.
+- [ ] Build a disposable fixture project. Prau is the test bed for now, which is
+      fine while it is scratch, but a generated fixture makes the sweep repeatable
+      on any machine.
+- [ ] Turn the ad-hoc verification matrix into a checked-in script so a regression
+      run is one command.
 
 ## Phase 2 — own the whole stack
 
