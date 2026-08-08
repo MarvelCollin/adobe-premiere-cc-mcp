@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Premiere MCP Link</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 12px;
+        background: #1e1e1e;
+        color: #d8d8d8;
+        font-size: 12px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .status {
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 3px;
+      }
+      .status.good {
+        background: #1d3b26;
+        color: #7ee2a8;
+      }
+      .status.bad {
+        background: #3d2020;
+        color: #ff9b9b;
+      }
+      button {
+        background: #333;
+        color: #e8e8e8;
+        border: 1px solid #4a4a4a;
+        border-radius: 3px;
+        padding: 4px 12px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #3d3d3d;
+      }
+      .meta {
+        color: #8a8a8a;
+        word-break: break-all;
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      #log {
+        border-top: 1px solid #333;
+        padding-top: 8px;
+        max-height: 210px;
+        overflow-y: auto;
+        font-family: Consolas, monospace;
+        font-size: 11px;
+      }
+      .row {
+        padding: 2px 0;
+      }
+      .row.ok {
+        color: #7ee2a8;
+      }
+      .row.err {
+        color: #ff9b9b;
+      }
+      .row.cmd {
+        color: #9ecbff;
+      }
+      .row.info {
+        color: #8a8a8a;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span id="status" class="status bad">Starting</span>
+      <button id="toggle">Stop</button>
+    </header>
+    <div class="meta">
+      <div id="dir"></div>
+      <div id="counts"></div>
+    </div>
+    <div id="log"></div>
+    <script src="CSInterface.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { BridgeError, HostError } from "./errors.js";
 import { wrapScript } from "./script.js";
 
-export const BRIDGE_DIR = join(tmpdir(), "premiere-mcp-bridge");
+export const BRIDGE_DIR = process.env.PREMIERE_MCP_BRIDGE_DIR ?? join(tmpdir(), "premiere-mcp-bridge");
 
 const POLL_INTERVAL_MS = 50;
 const DEFAULT_TIMEOUT_MS = 30_000;

@@ -8,7 +8,9 @@
   },
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "panel",
+    "scripts/install-panel.mjs"
   ],
   "scripts": {
     "build": "tsc",
@@ -18,7 +20,8 @@
     "check": "tsc --noEmit && vitest run",
     "smoke": "node scripts/smoke.mjs",
     "verify": "node scripts/verify.mjs",
-    "docs": "node scripts/docs.mjs"
+    "docs": "node scripts/docs.mjs",
+    "install-panel": "node scripts/install-panel.mjs"
   },
   "keywords": [
     "mcp",
