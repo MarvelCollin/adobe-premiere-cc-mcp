@@ -61,7 +61,7 @@ from "the panel is not running".
 
 ## Requirements
 
-- Node.js 20.19+
+- Node.js 20 or newer, tested on 20 and 22
 - Adobe Premiere Pro 2020 or newer
 - Adobe Media Encoder is **not** required; exports use Premiere's own encoder
 

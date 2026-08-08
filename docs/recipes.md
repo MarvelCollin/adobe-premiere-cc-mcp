@@ -166,5 +166,6 @@ a second apart took it from ten cuts per minute to ninety, and from failing to p
   whether a clip is genuinely solved; a bare `Auto-scale` label means it is not.
 - Any modal dialog freezes the bridge until it is dismissed. That is why sequences are
   created with `create_sequence_from_items` rather than the modal route.
-- `contact_sheet` captures the sequence composite, not the clip alone, so a disabled clip
-  writes a black frame under that clip's name. `analyse_clips` does isolate.
+- `contact_sheet` and `analyse_clips` both hide the other video tracks by default, so a
+  still shows the clip it is named after. If you wanted the finished composite, pass
+  `isolate: false` to `contact_sheet`.

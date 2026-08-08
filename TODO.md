@@ -4,7 +4,10 @@ Where this project is going, in rough priority order.
 
 ## Status today
 
-- 46 tools, TypeScript, `npm run check` green (typecheck + 69 tests), CI green on push.
+- 53 tools, TypeScript, `npm run check` green (typecheck + 76 tests). CI runs the check on
+  Windows and Linux across Node 20 and 22, and separately proves the published tarball
+  carries the signed panel and no certificate, and that the generated tool table is not
+  stale.
 - Every tool verified live on Premiere Pro 26.2, destructive ones included.
   `npm run verify -- --destructive` reruns the whole sweep on demand.
 - All 46 exercised end to end against a nine up grid built in `Prau.prproj`
@@ -151,10 +154,8 @@ single track edit. Every one of them reported success while doing the wrong thin
       failed when the speed had applied fine. It now reads the speed back off the QE
       clip and returns `appliedSpeedPercent`, erroring if Premiere disagrees.
 
-`contact_sheet` has the same composite blind spot as `analyse_clips` had: it names each
-still after a clip but captures whatever the sequence shows, so a disabled clip writes a
-black frame under that clip's name. Left as is for now, since the stills are meant to be
-looked at rather than measured, but it should either isolate the same way or say so.
+`contact_sheet` had the same composite blind spot and has since been fixed the same way;
+see Phase 7.
 
 ## Phase 7 — what looking at the screen caught
 

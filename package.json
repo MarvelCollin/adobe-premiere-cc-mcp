@@ -13,7 +13,7 @@
     "url": "https://github.com/MarvelCollin/adobe-premiere-cc-mcp/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "publishConfig": {
     "access": "public"
