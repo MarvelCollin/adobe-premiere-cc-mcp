@@ -1,0 +1,36 @@
+{
+  "name": "adobe-premier-cc-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for driving Adobe Premiere Pro, with tools that verify their own writes",
+  "type": "module",
+  "bin": {
+    "adobe-premier-cc-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "check": "tsc --noEmit && vitest run"
+  },
+  "keywords": [
+    "mcp",
+    "premiere",
+    "adobe",
+    "video-editing"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
