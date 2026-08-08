@@ -3,6 +3,25 @@
   "version": "0.1.0",
   "description": "MCP server for driving Adobe Premiere Pro, with tools that verify their own writes",
   "type": "module",
+  "author": "MarvelCollin",
+  "homepage": "https://github.com/MarvelCollin/adobe-premiere-cc-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarvelCollin/adobe-premiere-cc-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MarvelCollin/adobe-premiere-cc-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "os": [
+    "win32",
+    "darwin"
+  ],
   "bin": {
     "adobe-premiere-cc-mcp": "dist/index.js"
   },
@@ -21,6 +40,7 @@
     "smoke": "node scripts/smoke.mjs",
     "verify": "node scripts/verify.mjs",
     "docs": "node scripts/docs.mjs",
+    "prepublishOnly": "npm run check && npm run build",
     "install-panel": "node scripts/install-panel.mjs",
     "sign-panel": "node scripts/sign-panel.mjs"
   },

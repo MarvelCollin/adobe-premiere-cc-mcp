@@ -108,9 +108,20 @@ signed with our own certificate.
 - [x] Script-generation tests so a refactor cannot silently change what runs inside
       Premiere, plus a guard that every tool is covered.
 - [x] Tool reference generated from the registry into the README.
-- [ ] Publish to npm. Now unblocked: `npm run sign-panel` and `npm run install-panel`
-      make the install story complete on Windows. Needs a decision on shipping the
-      signed `.zxp` in the package or having users sign their own.
+- [ ] Publish to npm. Packaging metadata is done: `repository`, `bugs`, `homepage`,
+      `engines`, `publishConfig` and a `prepublishOnly` that runs the full check are all
+      in place, and `npm pack --dry-run` produces a clean 72 kB tarball of 93 files.
+      **One decision is left.** The tarball currently ships `panel/` as *source*, and
+      Premiere refuses unsigned extensions on this machine even with `PlayerDebugMode`
+      set, so an npm install alone does not give a working bridge. Either:
+      - ship the signed `.zxp` in the package, which means committing a build artifact
+        and a certificate whose private key must not travel with it, or
+      - keep shipping source and make `install-panel` run `sign-panel` first, which
+        means every user generates their own self-signed certificate and has to accept
+        the resulting trust prompt.
+      The second is cleaner to distribute and worse to onboard. Needs a call.
+- [ ] `os` in `package.json` declares `win32` and `darwin`. Only `win32` is tested; the
+      macOS install path is written but has never run.
 - [ ] Decide public vs private for the repo. Currently public.
 
 ---
@@ -146,6 +157,21 @@ single track edit. Every one of them reported success while doing the wrong thin
 still after a clip but captures whatever the sequence shows, so a disabled clip writes a
 black frame under that clip's name. Left as is for now, since the stills are meant to be
 looked at rather than measured, but it should either isolate the same way or say so.
+
+## Phase 7 — structure
+
+- [x] Shared `src/premiere/encoder.ts` for the export scope mapping and preset discovery,
+      which `export_sequence` and the loudness tools had each grown their own copy of,
+      and `src/premiere/still.ts` for the frame export that `analyse_frame`,
+      `analyse_clips` and `review_sequence` all need.
+- [x] Split `review.ts`, which had become four unrelated concerns at 331 lines, into
+      `review.ts` (check_edit), `grade-read.ts` (get_grade, match_grade) and
+      `overview.ts` (review_sequence, contact_sheet). Largest file is now 243 lines
+      across 40 modules.
+- [ ] The ExtendScript still lives as template strings inside tool handlers. It works and
+      the generated-script tests cover it, but a `src/host/` layer of named script
+      builders would separate what runs in Premiere from how a tool is declared. Worth
+      doing before the tool count grows much further.
 
 ## Known Premiere limits
 
