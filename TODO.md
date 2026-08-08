@@ -233,6 +233,37 @@ Worth knowing before investing further, established by research rather than gues
   export, track creation and Lumetri writes, since those decide whether a port is even
   possible. Until then CEP is the correct choice.
 
+### Spike result, from the published UXP reference and Adobe's own samples
+
+Documentation only. Nothing here has been run, because running it means building a UXP
+plugin, and that is the next piece of work rather than something to assume.
+
+- **Effects, transitions and keyframes: likely fine.** Adobe's `premiere-api` sample
+  panel covers "projects, sequences, markers, metadata, effects, transitions, keyframes,
+  source monitor, import/export, encoder". Lumetri is not named specifically, so the
+  Basic Correction writes this project depends on need confirming, but the category is
+  clearly present.
+- **Media export: likely fine.** The same sample lists an encoder and import/export, so
+  `export_sequence` should have a route.
+- **Frame export: not documented anywhere.** No PNG still export appears in the Sequence
+  class or the samples. This is the serious one. `export_frame`, `analyse_frame`,
+  `analyse_clips`, `contact_sheet` and `review_sequence` all rest on
+  `qe.exportFramePNG`, which is undocumented QE in the first place. Measurement and
+  visual verification are what make this project worth using, and they are exactly what
+  has no visible UXP replacement.
+- **Adding tracks: not documented.** The Sequence class exposes `getVideoTrack`,
+  `getAudioTrack`, `getCaptionTrack` and counts, but no creation. A nine up grid needs
+  nine tracks, so this blocks that whole class of work.
+- **In and out points: present**, through a `SetInPointAction` and `SetOutPointAction`.
+- The API is action based and asynchronous rather than synchronous like ExtendScript,
+  which actually suits this server's request and response bridge well.
+
+**Conclusion.** A port is not currently possible without losing frame export and track
+creation. The honest next step is a throwaway UXP plugin that tries exactly those two
+things and reports back, before any porting work is planned. If frame export genuinely
+has no UXP route, that is worth raising with Adobe on the forums, since it removes the
+ability to see what a script did.
+
 ## Open questions
 
 - Is the stabiliser solve genuinely discarded on reopen, or re-analysed lazily?
