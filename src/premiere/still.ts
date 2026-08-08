@@ -11,6 +11,13 @@ export async function exportStill(atSeconds: number, label: string, into?: strin
     `
     var seq = __seq();
     if (!seq) return __error("No active sequence");
+    var runsTo = __ticksToSeconds(seq.end);
+    if (${atSeconds} > runsTo) {
+      return __error(
+        "Cannot capture ${atSeconds}s: the sequence ends at " + runsTo +
+        "s, and past the end Premiere renders an empty frame that would measure as pure black."
+      );
+    }
     seq.setPlayerPosition(String(__secondsToTicks(${atSeconds})));
     var qeSeq = __qe();
     var base = "${esc(toHostPath(target))}".replace(/\\.png$/i, "");

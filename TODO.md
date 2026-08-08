@@ -177,6 +177,27 @@ Premiere and looking at the timeline found it.
       and 33.3 in the UI. Reading a value back through the same API is good; seeing it in
       the interface is better.
 
+## Phase 8 — stale claims and quiet lies
+
+- [x] **CI had been red on every push since the packaging commit**, while the README
+      advertised a passing badge. Cause was ours: an `os` field of `win32,darwin` makes
+      `npm ci` fail with `EBADPLATFORM` on a Linux runner. The field guarded against
+      installing on a platform Premiere does not run on anyway, so it is gone. CI now
+      runs on Windows and Linux across Node 20 and 22, which is also the first time the
+      primary platform has ever been tested.
+- [x] CI now proves two things that were previously only checked by hand: that the
+      published tarball contains the signed panel and no certificate or signing binary,
+      and that the generated tool table in the README is not stale.
+- [x] **`analyse_frame` past the end of a sequence reported a pure black frame as a
+      real measurement**, complete with a neutral colour cast and grading suggestions.
+      Anything past the last clip renders empty, so the numbers described nothing. It now
+      refuses out of range times outright, and any frame that measures as fully black is
+      flagged with `blankFrame` and has its suggestions suppressed, since a gap or a
+      disabled clip can produce one inside the sequence too.
+- [x] Node version was claimed three different ways: `20.19+` in the README, `>=18` in
+      `engines`, and only 20 tested in CI. Node 18 is end of life, so it is `>=20` now,
+      stated once and tested on 20 and 22.
+
 ## Phase 7 — structure
 
 - [x] Shared `src/premiere/encoder.ts` for the export scope mapping and preset discovery,

@@ -62,7 +62,17 @@ export const analysisTools = defineTools([
       const path = await exportStill(time_seconds, "frame");
       try {
         const { stats, suggestions, size } = analyseFile(path);
-        return { atSeconds: time_seconds, frameSize: size, stats, suggestions };
+        const blank = stats.whitePoint === 0;
+        return {
+          atSeconds: time_seconds,
+          frameSize: size,
+          stats,
+          suggestions: blank ? [] : suggestions,
+          blankFrame: blank,
+          warning: blank
+            ? "This frame is entirely black, so the numbers describe nothing. Usually a gap on the track, a disabled clip, or a point past the last clip. Do not grade from this."
+            : null,
+        };
       } finally {
         discard(path);
       }
@@ -173,6 +183,7 @@ export const analysisTools = defineTools([
               name: clip.name,
               atSeconds: Math.round(at * 100) / 100,
               measuredRegion: rect ?? "whole frame",
+              blankFrame: stats.whitePoint === 0,
               blackPoint: stats.blackPoint,
               whitePoint: stats.whitePoint,
               contrastRange: stats.contrastRange,
