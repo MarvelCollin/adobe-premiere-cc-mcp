@@ -115,6 +115,8 @@ await check("get_stabilizer_status", "get_stabilizer_status", {});
 await check("get_sequence_range", "get_sequence_range", {});
 await check("check_edit", "check_edit", {});
 await check("get_grade", "get_grade", {});
+await check("check_media", "check_media", { limit: 20 });
+await check("analyse_frame", "analyse_frame", { time_seconds: midpoint });
 await check("export_frame", "export_frame", {
   output_path: join(SCRATCH, "verify_frame.png"),
   time_seconds: midpoint,
