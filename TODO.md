@@ -108,18 +108,16 @@ signed with our own certificate.
 - [x] Script-generation tests so a refactor cannot silently change what runs inside
       Premiere, plus a guard that every tool is covered.
 - [x] Tool reference generated from the registry into the README.
-- [ ] Publish to npm. Packaging metadata is done: `repository`, `bugs`, `homepage`,
-      `engines`, `publishConfig` and a `prepublishOnly` that runs the full check are all
-      in place, and `npm pack --dry-run` produces a clean 72 kB tarball of 93 files.
-      **One decision is left.** The tarball currently ships `panel/` as *source*, and
-      Premiere refuses unsigned extensions on this machine even with `PlayerDebugMode`
-      set, so an npm install alone does not give a working bridge. Either:
-      - ship the signed `.zxp` in the package, which means committing a build artifact
-        and a certificate whose private key must not travel with it, or
-      - keep shipping source and make `install-panel` run `sign-panel` first, which
-        means every user generates their own self-signed certificate and has to accept
-        the resulting trust prompt.
-      The second is cleaner to distribute and worse to onboard. Needs a call.
+- [x] Decided: **ship our own signed `.zxp`**, so an install depends on nothing of
+      Adobe's and nothing of anyone else's. `artifacts/PremiereMcpLink.zxp` is now
+      committed and listed in `files`; `install-panel` already prefers it over the panel
+      source, so `npm install` gives a working bridge with no signing step. The private
+      key (`tools/*.p12`) and Adobe's `ZXPSignCmd.exe` stay ignored and are confirmed
+      absent from the tarball. Anyone who would rather not trust our certificate can
+      still run `npm run sign-panel` and build their own; `SECURITY.md` says so plainly.
+- [ ] Actually run `npm publish`. The name `adobe-premiere-cc-mcp` is unclaimed, the
+      tarball is 86 kB across 98 files, and `prepublishOnly` runs typecheck, tests and
+      build first. Only needs `npm login`.
 - [ ] `os` in `package.json` declares `win32` and `darwin`. Only `win32` is tested; the
       macOS install path is written but has never run.
 - [ ] Decide public vs private for the repo. Currently public.
@@ -157,6 +155,26 @@ single track edit. Every one of them reported success while doing the wrong thin
 still after a clip but captures whatever the sequence shows, so a disabled clip writes a
 black frame under that clip's name. Left as is for now, since the stills are meant to be
 looked at rather than measured, but it should either isolate the same way or say so.
+
+## Phase 7 — what looking at the screen caught
+
+The API sweep reported 43/44 passing while quietly damaging the project. Only opening
+Premiere and looking at the timeline found it.
+
+- [x] **The verify sweep leaked an audio clip into the active sequence on every
+      destructive run.** `add_to_timeline` places a clip on a *video* track and Premiere
+      also drops its linked audio onto an audio track; cleanup removed only the video
+      node. Three orphan clips had accumulated at 12s, 25s and 38s of a real sequence.
+      The sweep now removes the linked audio too and asserts it, and the whole run is
+      45/45. Worth remembering as a class of bug: every tool can pass while the job as a
+      whole is wrong, because nothing asserted what was left behind.
+- [x] `contact_sheet` now isolates the clip's track like `analyse_clips` does, so a still
+      shows the clip it is named after rather than the composite. `isolate: false` keeps
+      the old behaviour when the finished frame is what you want.
+- [x] Confirmed against Premiere's own Effect Controls that the tools' writes are real:
+      a grid cell reported as position 0.5, 0.1667 at scale 33.3 reads as 540.0, 320.0
+      and 33.3 in the UI. Reading a value back through the same API is good; seeing it in
+      the interface is better.
 
 ## Phase 7 — structure
 
