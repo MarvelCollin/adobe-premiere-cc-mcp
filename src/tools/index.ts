@@ -7,6 +7,7 @@ import { editTools } from "./edit.js";
 import { effectTools } from "./effects.js";
 import { exportTools } from "./export.js";
 import { keyframeTools } from "./keyframes.js";
+import { loudnessTools } from "./loudness.js";
 import { markerTools } from "./markers.js";
 import { mediaTools } from "./media.js";
 import { playheadTools } from "./playhead.js";
@@ -37,6 +38,7 @@ export const allTools: ToolDefinition[] = [
   ...transformTools,
   ...colorTools,
   ...audioTools,
+  ...loudnessTools,
   ...keyframeTools,
   ...effectTools,
   ...transitionTools,
