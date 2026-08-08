@@ -121,7 +121,7 @@ Then ask the assistant to call `ping`.
 | `set_stabilizer_mode` | `node_id`, `mode`, `max_scale` | Set Warp Stabilizer to 'no_motion' (locked static frame, what static-camera edits need) or 'smooth_motion' (keeps camera movement, smoothed). |
 | `export_frame` | `output_path`, `time_seconds` | Write a full resolution still of the sequence at a given time. |
 | `list_export_presets` | `filter`, `limit` | List Adobe .epr export presets on disk, including the ones Premiere ships itself. |
-| `export_sequence` | `output_path`, `preset_path`, `timeout_ms` | Render the active sequence to a file using Premiere's own encoder; Adobe Media Encoder is not required. |
+| `export_sequence` | `output_path`, `preset_path`, `range`, `timeout_ms` | Render the active sequence to a file using Premiere's own encoder; Adobe Media Encoder is not required. |
 | `save_project` | — | Save the current project. |
 | `run_script` | `code`, `timeout_ms` | Escape hatch: run raw ExtendScript in Premiere for anything the typed tools do not cover. |
 

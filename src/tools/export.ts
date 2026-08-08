@@ -94,19 +94,25 @@ export const exportTools = defineTools([
   {
     name: "export_sequence",
     description:
-      "Render the active sequence to a file using Premiere's own encoder; Adobe Media Encoder is not required. Long running, so raise timeout_ms for big sequences. The output file is confirmed on disk before this reports success.",
+      "Render the active sequence to a file using Premiere's own encoder; Adobe Media Encoder is not required. Defaults to the whole sequence; pass range 'in_to_out' to honour the in and out points from set_sequence_range, or 'work_area' for the work area. Long running, so raise timeout_ms for big sequences. The output file is confirmed on disk before this reports success.",
     schema: {
       output_path: z.string().describe("Absolute output path, e.g. C:/Users/me/Videos/cut.mp4"),
       preset_path: z.string().describe("Absolute path to an .epr preset, from list_export_presets"),
+      range: z
+        .enum(["entire", "in_to_out", "work_area"])
+        .default("entire")
+        .describe("Which part of the sequence to render"),
       timeout_ms: z.number().int().positive().default(600_000).describe("Default 10 minutes"),
     },
     handler: async ({
       output_path,
       preset_path,
+      range = "entire",
       timeout_ms = 600_000,
     }: {
       output_path: string;
       preset_path: string;
+      range?: "entire" | "in_to_out" | "work_area";
       timeout_ms?: number;
     }) =>
       evaluate(
@@ -116,10 +122,21 @@ export const exportTools = defineTools([
         var preset = new File("${esc(toHostPath(preset_path))}");
         if (!preset.exists) return __error("Preset not found: ${esc(toHostPath(preset_path))}");
 
+        var scope = ${
+          range === "in_to_out"
+            ? "app.encoder.ENCODE_IN_TO_OUT"
+            : range === "work_area"
+              ? "app.encoder.ENCODE_WORKAREA"
+              : "app.encoder.ENCODE_ENTIRE"
+        };
+        if (typeof scope !== "number") {
+          return __error("This Premiere build does not expose the ${range} export scope");
+        }
+
         var reported = seq.exportAsMediaDirect(
           "${esc(toHostPath(output_path))}",
           "${esc(toHostPath(preset_path))}",
-          app.encoder.ENCODE_ENTIRE
+          scope
         );
 
         var written = new File("${esc(toHostPath(output_path))}");
@@ -129,6 +146,7 @@ export const exportTools = defineTools([
         return __result({
           path: "${esc(toHostPath(output_path))}",
           bytes: written.length,
+          range: "${range}",
           hostResult: String(reported)
         });
       `,
